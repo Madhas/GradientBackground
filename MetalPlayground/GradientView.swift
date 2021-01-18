@@ -42,19 +42,19 @@ final class GradientView: UIView {
     ]
     
     private var colorsBuffer: MTLBuffer!
-    private let colors: [simd_float4] = [
-        SIMD4<Float>(254 / 255, 244 / 255, 202 / 255, 1),
-        SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1),
-        SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
-        SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1)
+    private let colors: [SIMD4<Float>] = [
+        SIMD4(254 / 255, 244 / 255, 202 / 255, 1),
+        SIMD4(135 / 255, 162 / 255, 132 / 255, 1),
+        SIMD4(66 / 255, 109 / 255,  87 / 255, 1),
+        SIMD4(247 / 255, 227 / 255, 139 / 255, 1)
     ]
     
     private var controlPointsBuffer: MTLBuffer!
-    private let controlPoints: [simd_float2] = [
-        SIMD2<Float>(0.356, 0.246),
-        SIMD2<Float>(0.825, 0.082),
-        SIMD2<Float>(0.185, 0.92),
-        SIMD2<Float>(0.649, 0.756)
+    private let controlPoints: [SIMD2<Float>] = [
+        SIMD2(0.356, 0.246),
+        SIMD2(0.825, 0.082),
+        SIMD2(0.185, 0.92),
+        SIMD2(0.649, 0.756)
     ]
     
     var displayLink: CADisplayLink!
