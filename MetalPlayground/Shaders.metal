@@ -17,7 +17,6 @@ struct VertexOut {
     float4 position [[ position ]];
 };
 
-
 vertex VertexOut vertex_shader(device const VertexIn *vertices [[ buffer(0) ]],
                                uint vid [[ vertex_id ]]) {
     VertexOut out;
@@ -28,12 +27,11 @@ vertex VertexOut vertex_shader(device const VertexIn *vertices [[ buffer(0) ]],
 fragment float4 fragment_shader(const VertexOut in [[ stage_in ]],
                                 constant const float4 *colors [[ buffer(0) ]],
                                 constant const float2 *controlPoints [[ buffer(1) ]]) {
-    float2 normalizedPosition = float2(in.position.x, in.position.y);
-    
+    float2 position = float2(in.position.x, in.position.y);
     float dists[4];
     float total = 0;
     for (int i = 0; i < 4; ++i) {
-        float d = distance(controlPoints[i], normalizedPosition);
+        float d = distance(controlPoints[i], position);
         if (d == 0) {
             return colors[i];
         }
