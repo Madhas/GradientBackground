@@ -28,7 +28,7 @@ vertex VertexOut vertex_shader(device const VertexIn *vertices [[ buffer(0) ]],
 fragment float4 fragment_shader(const VertexOut in [[ stage_in ]],
                                 constant const float4 *colors [[ buffer(0) ]],
                                 constant const float2 *controlPoints [[ buffer(1) ]]) {
-    float2 normalizedPosition = float2(in.position.x / 375, in.position.y / 812);
+    float2 normalizedPosition = float2(in.position.x, in.position.y);
     
     float dists[4];
     float total = 0;

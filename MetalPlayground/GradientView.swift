@@ -43,18 +43,18 @@ final class GradientView: UIView {
     
     private var colorsBuffer: MTLBuffer!
     private let colors: [simd_float4] = [
-        simd_float4(254 / 255, 244 / 255, 202 / 255, 1),
-        simd_float4(135 / 255, 162 / 255, 132 / 255, 1),
-        simd_float4(66 / 255, 109 / 255,  87 / 255, 1),
-        simd_float4(247 / 255, 227 / 255, 139 / 255, 1)
+        SIMD4<Float>(254 / 255, 244 / 255, 202 / 255, 1),
+        SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1),
+        SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
+        SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1)
     ]
     
     private var controlPointsBuffer: MTLBuffer!
     private let controlPoints: [simd_float2] = [
-        simd_float2(0.356, 0.246),
-        simd_float2(0.825, 0.082),
-        simd_float2(0.185, 0.92),
-        simd_float2(0.649, 0.756)
+        SIMD2<Float>(0.356, 0.246),
+        SIMD2<Float>(0.825, 0.082),
+        SIMD2<Float>(0.185, 0.92),
+        SIMD2<Float>(0.649, 0.756)
     ]
     
     var displayLink: CADisplayLink!
@@ -73,6 +73,14 @@ final class GradientView: UIView {
         super.layoutSubviews()
         
         metalLayer.drawableSize = bounds.size
+        metalLayer.framebufferOnly = false
+        
+        if (controlPointsBuffer == nil) {
+            let controlPoints = self.controlPoints.map { point in
+                SIMD2(point.x * Float(self.bounds.width), point.y * Float(self.bounds.height))
+            }
+            controlPointsBuffer = device.makeBuffer(bytes: controlPoints, length: MemoryLayout.size(ofValue: controlPoints[0]) * controlPoints.count, options: [])
+        }
     }
     
     // MARK: Setup
@@ -87,7 +95,6 @@ final class GradientView: UIView {
         
         vertexBuffer = device.makeBuffer(bytes: vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, options: [])
         colorsBuffer = device.makeBuffer(bytes: colors, length: MemoryLayout.size(ofValue: colors[0]) * colors.count, options: [])
-        controlPointsBuffer = device.makeBuffer(bytes: controlPoints, length: MemoryLayout.size(ofValue: controlPoints[0]) * controlPoints.count, options: [])
         
         let vertexProgram = library.makeFunction(name: "vertex_shader")!
         let fragmentProgram = library.makeFunction(name: "fragment_shader")!
