@@ -134,7 +134,17 @@ final class GradientView: UIView {
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: 6)
         encoder.endEncoding()
         
+        if usesBlur {
+            let blur = MPSImageGaussianBlur(device: device, sigma: 30)
+            blur.edgeMode = .clamp
+            blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
+        }
+        
         commandBuffer.present(drawable)
         commandBuffer.commit()
+    }
+    private var usesBlur = false
+    func toggleBlur() {
+        usesBlur.toggle()
     }
 }

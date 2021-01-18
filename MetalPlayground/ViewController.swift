@@ -18,8 +18,12 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        view.addGestureRecognizer(recognizer)
     }
 
-
+    @objc private func tapped() {
+        (view as! GradientView).toggleBlur()
+    }
 }
 
