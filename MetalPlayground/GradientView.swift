@@ -10,11 +10,6 @@ import Metal
 import MetalPerformanceShaders
 import simd
 
-private struct VertexIn {
-    let position: SIMD4<Float>
-    let displacementColor: SIMD4<Float>
-}
-
 final class GradientView: UIView {
 
     override class var layerClass: AnyClass {
@@ -30,34 +25,13 @@ final class GradientView: UIView {
     private var computePipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
-    private var displacementMapTexture: MTLTexture!
     private var drawableCopy: MTLTexture!
 
     private var vertexBuffer: MTLBuffer!
-    private let vertices: [VertexIn] = {
-        let color1 = SIMD4<Float>(171 / 255, 171 / 255, 0, 1)
-        let color2 = SIMD4<Float>(0, 128 / 255, 0, 1)
-        let color3 = SIMD4<Float>(128 / 255, 0, 0, 1)
-        let color4 = SIMD4<Float>(0, 128 / 255, 0, 1)
-        
-        return [
-            VertexIn(position: SIMD4(-1, 1, 0, 1), displacementColor: color1),
-            VertexIn(position: SIMD4(1, 1, 0, 1), displacementColor: color1),
-            VertexIn(position: SIMD4(-1, 0, 0, 1), displacementColor: color1),
-            
-            VertexIn(position: SIMD4(1, 1, 0, 1), displacementColor: color2),
-            VertexIn(position: SIMD4(-1, 0, 0, 1), displacementColor: color2),
-            VertexIn(position: SIMD4(1, 0, 0, 1), displacementColor: color2),
-            
-            VertexIn(position: SIMD4(-1, 0, 0, 1), displacementColor: color3),
-            VertexIn(position: SIMD4(1, 0, 0, 1), displacementColor: color3),
-            VertexIn(position: SIMD4(-1, -1, 0, 1), displacementColor: color3),
-            
-            VertexIn(position: SIMD4(1, 0, 0, 1), displacementColor: color4),
-            VertexIn(position: SIMD4(-1, -1, 0, 1), displacementColor: color4),
-            VertexIn(position: SIMD4(1, -1, 0, 1), displacementColor: color4)
-        ]
-    }()
+    private let vertices: [SIMD4<Float>] = [
+        SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
+        SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1), SIMD4(1, -1, 0, 1)
+    ]
     
     private var colorsBuffer: MTLBuffer!
     private let colors: [SIMD4<Float>] = [
@@ -103,9 +77,6 @@ final class GradientView: UIView {
             textureDescriptor.pixelFormat = .bgra8Unorm
             textureDescriptor.width = Int(self.bounds.width)
             textureDescriptor.height = Int(self.bounds.height)
-            textureDescriptor.usage = [.renderTarget, .shaderRead]
-            displacementMapTexture = device.makeTexture(descriptor: textureDescriptor)
-            
             textureDescriptor.usage = .shaderRead
             drawableCopy = device.makeTexture(descriptor: textureDescriptor)
         }
@@ -132,7 +103,6 @@ final class GradientView: UIView {
         renderPipelineDescriptor.vertexFunction = vertexProgram
         renderPipelineDescriptor.fragmentFunction = fragmentProgram
         renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
-        renderPipelineDescriptor.colorAttachments[1].pixelFormat = .bgra8Unorm
         renderPipelineState = try! device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
         
         computePipelineState = try! device.makeComputePipelineState(function: computeProgram)
@@ -159,13 +129,6 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
-        if let texture = displacementMapTexture {
-            renderPassDescriptor.colorAttachments[1].texture = texture
-            renderPassDescriptor.colorAttachments[1].loadAction = .dontCare
-            renderPassDescriptor.colorAttachments[1].storeAction = .dontCare
-            renderPassDescriptor.colorAttachments[1].clearColor = clearWhite
-        }
-        
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
         encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
@@ -179,23 +142,22 @@ final class GradientView: UIView {
         blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
 
         if usesBlur {
-//            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
-//            blitEncoder.copy(from: drawable.texture,
-//                             sourceSlice: 0,
-//                             sourceLevel: 0,
-//                             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-//                             sourceSize: MTLSize(width: drawable.texture.width, height: drawable.texture.height, depth: 1),
-//                             to: drawableCopy,
-//                             destinationSlice: 0,
-//                             destinationLevel: 0,
-//                             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
-//            blitEncoder.endEncoding()
+            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
+            blitEncoder.copy(from: drawable.texture,
+                             sourceSlice: 0,
+                             sourceLevel: 0,
+                             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+                             sourceSize: MTLSize(width: drawable.texture.width, height: drawable.texture.height, depth: 1),
+                             to: drawableCopy,
+                             destinationSlice: 0,
+                             destinationLevel: 0,
+                             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+            blitEncoder.endEncoding()
             
             let compute = commandBuffer.makeComputeCommandEncoder()!
             compute.setComputePipelineState(computePipelineState)
-            compute.setTexture(drawable.texture, index: 0)
-            compute.setTexture(displacementMapTexture, index: 1)
-            compute.setTexture(drawable.texture, index: 2)
+            compute.setTexture(drawableCopy, index: 0)
+            compute.setTexture(drawable.texture, index: 1)
             
             let w = computePipelineState.threadExecutionWidth;
             let h = computePipelineState.maxTotalThreadsPerThreadgroup / w;
