@@ -12,10 +12,10 @@ final class GradientViewConfig {
     
     let colors: [SIMD4<Float>]
     let controlPoints: [SIMD2<Float>] = [
-        SIMD2(0.356, 0.246),
-        SIMD2(0.825, 0.082),
+        SIMD2(0.361, 0.249),
         SIMD2(0.185, 0.92),
-        SIMD2(0.649, 0.756)
+        SIMD2(0.648, 0.757),
+        SIMD2(0.824, 0.082)
     ]
     
     private let intermediatePoints: [SIMD2<Float>] = [
@@ -48,8 +48,8 @@ final class GradientViewConfig {
         let flooredStep = floor(currentStep)
         let source = currentStep == flooredStep ? controlPoints : intermediatePoints
         let destination = currentStep == flooredStep ? intermediatePoints : controlPoints
-        var transforms: [simd_float3x3] = []
-        transforms.reserveCapacity(source.count)
+        
+        var transforms: [simd_float3x3] = Array(repeating: simd_float3x3(0), count: source.count)
         
         let ctrlIdx = Int(flooredStep)
         for index in 0 ..< source.count {
