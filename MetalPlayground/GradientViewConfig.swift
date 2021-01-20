@@ -28,14 +28,9 @@ final class GradientViewConfig {
     // Transforms
     private var currentStep: Float = 0
     private let stepsCount: Float = 4
-    private var currentTransforms: [simd_float3x3]
     
     init(colors: [SIMD4<Float>]) {
-        self.colors = colors
-        currentTransforms = (0 ..< controlPoints.count).map { index in
-            simd_float3x3(SIMD3(1, 0, 0), SIMD3(0, 1, 0), SIMD3(0, 0, 1))
-        }
-    }
+        self.colors = colors    }
     
     convenience init(colors: [CGColor]) {
         let components = colors.compactMap { color -> SIMD4<Float>? in
@@ -58,13 +53,12 @@ final class GradientViewConfig {
         
         let ctrlIdx = Int(flooredStep)
         for index in 0 ..< source.count {
-            let tx = (destination[ctrlIdx].x - source[ctrlIdx].x) * Float(viewport.width) + currentTransforms[index][2][0]
-            let ty = (destination[ctrlIdx].y - source[ctrlIdx].y) * Float(viewport.height) + currentTransforms[index][2][1]
+            let tx = (destination[ctrlIdx].x - source[ctrlIdx].x) * Float(viewport.width)
+            let ty = (destination[ctrlIdx].y - source[ctrlIdx].y) * Float(viewport.height)
             transforms[index] = simd_float3x3(SIMD3(1, 0, tx), SIMD3(0, 1, ty), SIMD3(0, 0, 1))
         }
         
-        currentTransforms = transforms
-        currentStep += 0.5
+        currentStep = (currentStep + 0.5).truncatingRemainder(dividingBy: stepsCount)
         return transforms
     }
 }
