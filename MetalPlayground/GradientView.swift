@@ -15,27 +15,64 @@ final class GradientView: UIView {
     private struct AnimationState {
         static let buffersCount = 3
         
-        var startTime: TimeInterval
-        var duration: TimeInterval
-        var timingFunction: CAMediaTimingFunction
-        var linearSteps: [(Float, Float)]
-        var targetTransforms: [simd_float3x3]
+        private(set) var finished = false
+        let startTime: TimeInterval
+        let duration: TimeInterval
+        let timingFunction: CAMediaTimingFunction
         
+        let startPoints: [SIMD2<Float>]
+        let targetPoints: [SIMD2<Float>]
+        
+        private let displayLink: CADisplayLink
+        private var linearSteps: [(x: Float, y: Float)]
         private var currentBuffer = 0
-        private var transformBuffers: [[simd_float3x3]] = Array(repeating: [], count: AnimationState.buffersCount)
+        private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: AnimationState.buffersCount)
+        private var currentPoints: [SIMD2<Float>] = []
         
-        init(startTime: TimeInterval, duration: TimeInterval, timingFunction: CAMediaTimingFunction, linearSteps: [(Float, Float)], targetTransforms: [simd_float3x3]) {
+        init(startTime: TimeInterval,
+             duration: TimeInterval,
+             timingFunction: CAMediaTimingFunction,
+             startPoints: [SIMD2<Float>],
+             targetPoints: [SIMD2<Float>],
+             displayLink: CADisplayLink) {
             self.startTime = startTime
             self.duration = duration
             self.timingFunction = timingFunction
-            self.linearSteps = linearSteps
-            self.targetTransforms = targetTransforms
+            self.startPoints = startPoints
+            self.targetPoints = targetPoints
+            self.displayLink = displayLink
+            currentPoints = targetPoints
+            
+            linearSteps = (0 ..< targetPoints.count).map { idx -> (Float, Float) in
+                let delta = (targetPoints[idx].x - startPoints[idx].x,
+                             targetPoints[idx].y - startPoints[idx].y)
+                return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
+            }
         }
         
-        mutating func nextBuffer(for data: [simd_float3x3]) -> [simd_float3x3] {
+        mutating func nextBuffer() -> [SIMD2<Float>] {
             defer { currentBuffer = (currentBuffer + 1) % AnimationState.buffersCount }
-            transformBuffers[currentBuffer] = data
-            return transformBuffers[currentBuffer]
+            
+            let t = (CACurrentMediaTime() - startTime) / duration
+            if t > 1 {
+                displayLink.invalidate()
+                finished = true
+                return targetPoints
+            } else {
+                let previousIdx = currentBuffer == 0 ? AnimationState.buffersCount - 1 : currentBuffer - 1
+                let previousBuffer = animationBuffers[previousIdx].isEmpty ? startPoints : animationBuffers[previousIdx]
+                let ratio = timingFunction.slopeFor(t: Float(t))
+                let nextBuffer = previousBuffer.enumerated().map { idx, point in
+                    SIMD2<Float>(point.x + linearSteps[idx].x * ratio, point.y + linearSteps[idx].y * ratio)
+                }
+                animationBuffers[currentBuffer] = nextBuffer
+                return animationBuffers[currentBuffer]
+//                currentPoints = currentPoints.enumerated().map { idx, point in
+//                    SIMD2<Float>(point.x + linearSteps[idx].x * ratio, point.y + linearSteps[idx].y * ratio)
+//                }
+//                animationBuffers[currentBuffer] = currentPoints
+//                return animationBuffers[currentBuffer]
+            }
         }
     }
 
@@ -63,16 +100,12 @@ final class GradientView: UIView {
     ]
     
     // Animations
-    private var displayLink: CADisplayLink!
     private var animationState: AnimationState?
-    private var transforms: [simd_float3x3]
-    private var syncSemaphore = DispatchSemaphore(value: AnimationState.buffersCount)
+    private var currentControlPoints: [SIMD2<Float>]
     
     init(config: GradientViewConfig) {
         self.config = config
-        transforms = (0 ..< config.controlPoints.count).map { index in
-            matrix_identity_float3x3
-        }
+        currentControlPoints = config.controlPoints
         super.init(frame: .zero)
         
         setupMetal()
@@ -83,9 +116,7 @@ final class GradientView: UIView {
                                              SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
                                              SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1),
                                              SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1)])
-        transforms = (0 ..< config.controlPoints.count).map { index in
-            matrix_identity_float3x3
-        }
+        currentControlPoints = config.controlPoints
         super.init(frame: frame)
         
         setupMetal()
@@ -120,20 +151,17 @@ final class GradientView: UIView {
             return
         }
         
-        let transforms = config.nextTransforms(for: bounds.size)
-        let lineraSteps = (0 ..< transforms.count).map { idx -> (Float, Float) in
-            let delta = (transforms[idx][0, 2] - self.transforms[idx][0, 2], transforms[idx][1, 2] - self.transforms[idx][1, 2])
-            return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
-        }
-        
+        let timer = CADisplayLink(target: self, selector: #selector(tick))
+        let nextPoints = config.nextControlPoints
         animationState = AnimationState(startTime: CACurrentMediaTime(),
                                         duration: duration,
                                         timingFunction: timingFunction,
-                                        linearSteps: lineraSteps,
-                                        targetTransforms: transforms)
+                                        startPoints: currentControlPoints,
+                                        targetPoints: nextPoints,
+                                        displayLink: timer)
+        currentControlPoints = nextPoints
         
-        displayLink = CADisplayLink(target: self, selector: #selector(tick))
-        displayLink.add(to: .main, forMode: .default)
+        timer.add(to: .main, forMode: .default)
     }
     
     // MARK: Setup
@@ -169,9 +197,10 @@ final class GradientView: UIView {
     }
     
     private func render() {
-        syncSemaphore.wait()
+        let semaphore = DispatchSemaphore(value: AnimationState.buffersCount)
+        semaphore.wait()
         guard let drawable = metalLayer.nextDrawable() else {
-            syncSemaphore.signal()
+            semaphore.signal()
             return
         }
         
@@ -184,41 +213,27 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
-        var transformBytes = transforms
+        var controlPoints: [SIMD2<Float>]
         if var state = animationState {
-            let t = (CACurrentMediaTime() - state.startTime) / state.duration
-            print(t)
-            if t > 1 {
-                transforms = state.targetTransforms
+            controlPoints = state.nextBuffer().map {
+                SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
+            }
+            if state.finished {
                 animationState = nil
-                displayLink.invalidate()
-                displayLink = nil
-            } else {
-                let ratio = state.timingFunction.slopeFor(t: Float(t))
-                transforms = transforms.enumerated().map { idx, transform in
-                    let step = (state.linearSteps[idx].0 * ratio, state.linearSteps[idx].1 * ratio)
-                    var transform = transform
-                    transform[0, 2] += step.0
-                    transform[1, 2] += step.1
-                    return transform
-                }
-                transformBytes = state.nextBuffer(for: transforms)
+            }
+        } else {
+            controlPoints = currentControlPoints.map {
+                SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
             }
         }
         
-        let mappedControlPoints = config.controlPoints.map { point -> SIMD2<Float> in
-            SIMD2(point.x * Float(drawable.texture.width), point.y * Float(drawable.texture.height))
-        }
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
         encoder.setVertexBytes(vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, index: 0)
         encoder.setFragmentBytes(config.colors, length: MemoryLayout.size(ofValue: config.colors[0]) * config.colors.count, index: 0)
-        encoder.setFragmentBytes(mappedControlPoints,
-                                 length: MemoryLayout.size(ofValue: mappedControlPoints[0]) * mappedControlPoints.count,
+        encoder.setFragmentBytes(controlPoints,
+                                 length: MemoryLayout.size(ofValue: controlPoints[0]) * controlPoints.count,
                                  index: 1)
-        encoder.setFragmentBytes(transformBytes,
-                                 length: MemoryLayout.size(ofValue: transforms[0]) * transforms.count,
-                                 index: 2)
         
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         encoder.endEncoding()
@@ -252,8 +267,8 @@ final class GradientView: UIView {
 //            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
 //            compute.endEncoding()
         
-        commandBuffer.addCompletedHandler { [weak self] _ in
-            self?.syncSemaphore.signal()
+        commandBuffer.addCompletedHandler { _ in
+            semaphore.signal()
         }
         commandBuffer.present(drawable)
         commandBuffer.commit()

@@ -26,8 +26,8 @@ final class GradientViewConfig {
     ]
     
     // Transforms
-    private var currentStep: Float = 0
-    private let stepsCount: Float = 4
+    private var currentStep: Int = 0
+    private let stepsCount: Int = 8
     
     init(colors: [SIMD4<Float>]) {
         self.colors = colors    }
@@ -44,21 +44,15 @@ final class GradientViewConfig {
         self.init(colors: components)
     }
     
-    func nextTransforms(for viewport: CGSize) -> [simd_float3x3] {
-        let flooredStep = floor(currentStep)
-        let source = currentStep == flooredStep ? controlPoints : intermediatePoints
-        let destination = currentStep == flooredStep ? intermediatePoints : controlPoints
+    var nextControlPoints: [SIMD2<Float>] {
+        defer { currentStep = (currentStep + 1) % stepsCount }
+        let source = currentStep % 2 == 0 ? intermediatePoints : controlPoints
+        let shift = (currentStep + 1) / 2
         
-        var transforms: [simd_float3x3] = Array(repeating: simd_float3x3(0), count: source.count)
-        
-        let ctrlIdx = Int(flooredStep)
-        for index in 0 ..< source.count {
-            let tx = (destination[ctrlIdx].x - source[ctrlIdx].x) * Float(viewport.width)
-            let ty = (destination[ctrlIdx].y - source[ctrlIdx].y) * Float(viewport.height)
-            transforms[index] = simd_float3x3(SIMD3(1, 0, tx), SIMD3(0, 1, ty), SIMD3(0, 0, 1))
+        if shift == 0 {
+            return source
+        } else {
+            return Array(source[shift ..< source.count] + source[0 ..< shift])
         }
-        
-        currentStep = (currentStep + 0.5).truncatingRemainder(dividingBy: stepsCount)
-        return transforms
     }
 }
