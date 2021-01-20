@@ -13,11 +13,30 @@ import simd
 final class GradientView: UIView {
     
     private struct AnimationState {
+        static let buffersCount = 3
+        
         var startTime: TimeInterval
         var duration: TimeInterval
         var timingFunction: CAMediaTimingFunction
         var linearSteps: [(Float, Float)]
         var targetTransforms: [simd_float3x3]
+        
+        private var currentBuffer = 0
+        private var transformBuffers: [[simd_float3x3]] = Array(repeating: [], count: AnimationState.buffersCount)
+        
+        init(startTime: TimeInterval, duration: TimeInterval, timingFunction: CAMediaTimingFunction, linearSteps: [(Float, Float)], targetTransforms: [simd_float3x3]) {
+            self.startTime = startTime
+            self.duration = duration
+            self.timingFunction = timingFunction
+            self.linearSteps = linearSteps
+            self.targetTransforms = targetTransforms
+        }
+        
+        mutating func nextBuffer(for data: [simd_float3x3]) -> [simd_float3x3] {
+            defer { currentBuffer = (currentBuffer + 1) % AnimationState.buffersCount }
+            transformBuffers[currentBuffer] = data
+            return transformBuffers[currentBuffer]
+        }
     }
 
     override class var layerClass: AnyClass {
@@ -44,9 +63,10 @@ final class GradientView: UIView {
     ]
     
     // Animations
-    private var transforms: [simd_float3x3]
     private var displayLink: CADisplayLink!
     private var animationState: AnimationState?
+    private var transforms: [simd_float3x3]
+    private var syncSemaphore = DispatchSemaphore(value: AnimationState.buffersCount)
     
     init(config: GradientViewConfig) {
         self.config = config
@@ -93,6 +113,29 @@ final class GradientView: UIView {
         render()
     }
     
+    // MARK: Public
+    
+    func animate(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+        guard animationState == nil else {
+            return
+        }
+        
+        let transforms = config.nextTransforms(for: bounds.size)
+        let lineraSteps = (0 ..< transforms.count).map { idx -> (Float, Float) in
+            let delta = (transforms[idx][0, 2] - self.transforms[idx][0, 2], transforms[idx][1, 2] - self.transforms[idx][1, 2])
+            return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
+        }
+        
+        animationState = AnimationState(startTime: CACurrentMediaTime(),
+                                        duration: duration,
+                                        timingFunction: timingFunction,
+                                        linearSteps: lineraSteps,
+                                        targetTransforms: transforms)
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(tick))
+        displayLink.add(to: .main, forMode: .default)
+    }
+    
     // MARK: Setup
     
     private func setupMetal() {
@@ -126,7 +169,11 @@ final class GradientView: UIView {
     }
     
     private func render() {
-        guard let drawable = metalLayer.nextDrawable() else { return }
+        syncSemaphore.wait()
+        guard let drawable = metalLayer.nextDrawable() else {
+            syncSemaphore.signal()
+            return
+        }
         
         let commandBuffer = commandQueue.makeCommandBuffer()!
         
@@ -137,7 +184,8 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
-        if let state = animationState {
+        var transformBytes = transforms
+        if var state = animationState {
             let t = (CACurrentMediaTime() - state.startTime) / state.duration
             print(t)
             if t > 1 {
@@ -154,6 +202,7 @@ final class GradientView: UIView {
                     transform[1, 2] += step.1
                     return transform
                 }
+                transformBytes = state.nextBuffer(for: transforms)
             }
         }
         
@@ -163,12 +212,11 @@ final class GradientView: UIView {
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
         encoder.setVertexBytes(vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, index: 0)
-        
         encoder.setFragmentBytes(config.colors, length: MemoryLayout.size(ofValue: config.colors[0]) * config.colors.count, index: 0)
         encoder.setFragmentBytes(mappedControlPoints,
                                  length: MemoryLayout.size(ofValue: mappedControlPoints[0]) * mappedControlPoints.count,
                                  index: 1)
-        encoder.setFragmentBytes(transforms,
+        encoder.setFragmentBytes(transformBytes,
                                  length: MemoryLayout.size(ofValue: transforms[0]) * transforms.count,
                                  index: 2)
         
@@ -177,7 +225,6 @@ final class GradientView: UIView {
         
         blurShader.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
 
-        if usesBlur {
 //            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
 //            blitEncoder.copy(from: drawable.texture,
 //                             sourceSlice: 0,
@@ -204,36 +251,11 @@ final class GradientView: UIView {
 //            
 //            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
 //            compute.endEncoding()
-        }
         
+        commandBuffer.addCompletedHandler { [weak self] _ in
+            self?.syncSemaphore.signal()
+        }
         commandBuffer.present(drawable)
         commandBuffer.commit()
-    }
-    
-    private var usesBlur = false
-    func toggleBlur() {
-        usesBlur.toggle()
-        render()
-    }
-    
-    func animate(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
-        guard animationState == nil else {
-            return
-        }
-        
-        let transforms = config.nextTransforms(for: bounds.size)
-        let lineraSteps = (0 ..< transforms.count).map { idx -> (Float, Float) in
-            let delta = (transforms[idx][0, 2] - self.transforms[idx][0, 2], transforms[idx][1, 2] - self.transforms[idx][1, 2])
-            return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
-        }
-        
-        animationState = AnimationState(startTime: CACurrentMediaTime(),
-                                        duration: duration,
-                                        timingFunction: timingFunction,
-                                        linearSteps: lineraSteps,
-                                        targetTransforms: transforms)
-        
-        displayLink = CADisplayLink(target: self, selector: #selector(tick))
-        displayLink.add(to: .main, forMode: .default)
     }
 }
