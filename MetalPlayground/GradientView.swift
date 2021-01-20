@@ -28,6 +28,7 @@ final class GradientView: UIView {
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
     private var drawableCopy: MTLTexture!
+    private var blurShader: MPSImageGaussianBlur!
 
     private let vertices: [SIMD4<Float>] = [
         SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
@@ -69,6 +70,8 @@ final class GradientView: UIView {
             textureDescriptor.usage = .shaderRead
             drawableCopy = device.makeTexture(descriptor: textureDescriptor)
         }
+        
+        render()
     }
     
     // MARK: Setup
@@ -93,8 +96,11 @@ final class GradientView: UIView {
         
         computePipelineState = try! device.makeComputePipelineState(function: computeProgram)
         
-        displayLink = CADisplayLink(target: self, selector: #selector(tick))
-        displayLink.add(to: .main, forMode: .default)
+        blurShader = MPSImageGaussianBlur(device: device, sigma: 30)
+        blurShader.edgeMode = .clamp
+        
+//        displayLink = CADisplayLink(target: self, selector: #selector(tick))
+//        displayLink.add(to: .main, forMode: .default)
     }
     
     @objc private func tick() {
@@ -126,9 +132,7 @@ final class GradientView: UIView {
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         encoder.endEncoding()
         
-        let blur = MPSImageGaussianBlur(device: device, sigma: 30)
-        blur.edgeMode = .clamp
-        blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
+        blurShader.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
 
         if usesBlur {
 //            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
@@ -166,5 +170,6 @@ final class GradientView: UIView {
     private var usesBlur = false
     func toggleBlur() {
         usesBlur.toggle()
+        render()
     }
 }
