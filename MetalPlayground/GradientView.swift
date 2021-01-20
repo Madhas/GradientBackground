@@ -11,6 +11,14 @@ import MetalPerformanceShaders
 import simd
 
 final class GradientView: UIView {
+    
+    private struct AnimationState {
+        var startTime: TimeInterval
+        var duration: TimeInterval
+        var timingFunction: CAMediaTimingFunction
+        var linearSteps: [(Float, Float)]
+        var targetTransforms: [simd_float3x3]
+    }
 
     override class var layerClass: AnyClass {
         CAMetalLayer.self
@@ -35,18 +43,29 @@ final class GradientView: UIView {
         SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1), SIMD4(1, -1, 0, 1)
     ]
     
-    var displayLink: CADisplayLink!
+    // Animations
+    private var transforms: [simd_float3x3]
+    private var displayLink: CADisplayLink!
+    private var animationState: AnimationState?
     
     init(config: GradientViewConfig) {
         self.config = config
+        transforms = (0 ..< config.controlPoints.count).map { index in
+            matrix_identity_float3x3
+        }
         super.init(frame: .zero)
+        
+        setupMetal()
     }
     
     override init(frame: CGRect) {
         config = GradientViewConfig(colors: [SIMD4<Float>(254 / 255, 244 / 255, 202 / 255, 1),
-                                             SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1),
                                              SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
-                                             SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1)])
+                                             SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1),
+                                             SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1)])
+        transforms = (0 ..< config.controlPoints.count).map { index in
+            matrix_identity_float3x3
+        }
         super.init(frame: frame)
         
         setupMetal()
@@ -98,9 +117,6 @@ final class GradientView: UIView {
         
         blurShader = MPSImageGaussianBlur(device: device, sigma: 30)
         blurShader.edgeMode = .clamp
-        
-//        displayLink = CADisplayLink(target: self, selector: #selector(tick))
-//        displayLink.add(to: .main, forMode: .default)
     }
     
     @objc private func tick() {
@@ -121,14 +137,41 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
+        if let state = animationState {
+            let t = (CACurrentMediaTime() - state.startTime) / state.duration
+            print(t)
+            if t > 1 {
+                transforms = state.targetTransforms
+                animationState = nil
+                displayLink.invalidate()
+                displayLink = nil
+            } else {
+                let ratio = state.timingFunction.slopeFor(t: Float(t))
+                transforms = transforms.enumerated().map { idx, transform in
+                    let step = (state.linearSteps[idx].0 * ratio, state.linearSteps[idx].1 * ratio)
+                    var transform = transform
+                    transform[0, 2] += step.0
+                    transform[1, 2] += step.1
+                    return transform
+                }
+            }
+        }
+        
         let mappedControlPoints = config.controlPoints.map { point -> SIMD2<Float> in
             SIMD2(point.x * Float(drawable.texture.width), point.y * Float(drawable.texture.height))
         }
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
         encoder.setVertexBytes(vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, index: 0)
+        
         encoder.setFragmentBytes(config.colors, length: MemoryLayout.size(ofValue: config.colors[0]) * config.colors.count, index: 0)
-        encoder.setFragmentBytes(mappedControlPoints, length: MemoryLayout.size(ofValue: mappedControlPoints[0]) * mappedControlPoints.count, index: 1)
+        encoder.setFragmentBytes(mappedControlPoints,
+                                 length: MemoryLayout.size(ofValue: mappedControlPoints[0]) * mappedControlPoints.count,
+                                 index: 1)
+        encoder.setFragmentBytes(transforms,
+                                 length: MemoryLayout.size(ofValue: transforms[0]) * transforms.count,
+                                 index: 2)
+        
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         encoder.endEncoding()
         
@@ -171,5 +214,26 @@ final class GradientView: UIView {
     func toggleBlur() {
         usesBlur.toggle()
         render()
+    }
+    
+    func animate(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+        guard animationState == nil else {
+            return
+        }
+        
+        let transforms = config.nextTransforms(for: bounds.size)
+        let lineraSteps = (0 ..< transforms.count).map { idx -> (Float, Float) in
+            let delta = (transforms[idx][0, 2] - self.transforms[idx][0, 2], transforms[idx][1, 2] - self.transforms[idx][1, 2])
+            return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
+        }
+        
+        animationState = AnimationState(startTime: CACurrentMediaTime(),
+                                        duration: duration,
+                                        timingFunction: timingFunction,
+                                        linearSteps: lineraSteps,
+                                        targetTransforms: transforms)
+        
+        displayLink = CADisplayLink(target: self, selector: #selector(tick))
+        displayLink.add(to: .main, forMode: .default)
     }
 }

@@ -21,14 +21,21 @@ vertex VertexOut vertex_shader(device const float4 *vertices [[ buffer(0) ]],
 }
 
 fragment float4 fragment_shader(const VertexOut in [[ stage_in ]],
-                                     constant const float4 *colors [[ buffer(0) ]],
-                                     constant const float2 *controlPoints [[ buffer(1) ]]) {
+                                constant const float4 *colors [[ buffer(0) ]],
+                                constant const float2 *controlPoints [[ buffer(1) ]],
+                                constant const float3x3 *transforms [[ buffer(2) ]]) {
     
     float2 position = float2(in.position.x, in.position.y);
+    float2 cntrls[4];
+    cntrls[0] = (float3(controlPoints[0].x, controlPoints[0].y, 1) * transforms[0]).xy;
+    cntrls[1] = (float3(controlPoints[1].x, controlPoints[1].y, 1) * transforms[1]).xy;
+    cntrls[2] = (float3(controlPoints[2].x, controlPoints[2].y, 1) * transforms[2]).xy;
+    cntrls[3] = (float3(controlPoints[3].x, controlPoints[3].y, 1) * transforms[3]).xy;
+    
     float dists[4];
     float total = 0;
     for (int i = 0; i < 4; ++i) {
-        float d = distance(controlPoints[i], position);
+        float d = distance(cntrls[i], position);
         if (d == 0) {
             return colors[i];
         }
