@@ -6,13 +6,15 @@
 //
 
 import UIKit
+import simd
 
 class ViewController: UIViewController {
     
     override func loadView() {
         super.loadView()
         
-        view = GradientView(frame: .zero)
+        let view = GradientView(frame: .zero)
+        self.view = view
     }
 
     override func viewDidLoad() {

@@ -20,6 +20,8 @@ final class GradientView: UIView {
         layer as! CAMetalLayer
     }
     
+    private let config: GradientViewConfig
+    
     private var device: MTLDevice!
     private var renderPipelineState: MTLRenderPipelineState!
     private var computePipelineState: MTLComputePipelineState!
@@ -27,31 +29,23 @@ final class GradientView: UIView {
     private var library: MTLLibrary!
     private var drawableCopy: MTLTexture!
 
-    private var vertexBuffer: MTLBuffer!
     private let vertices: [SIMD4<Float>] = [
         SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
         SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1), SIMD4(1, -1, 0, 1)
     ]
     
-    private var colorsBuffer: MTLBuffer!
-    private let colors: [SIMD4<Float>] = [
-        SIMD4(254 / 255, 244 / 255, 202 / 255, 1),
-        SIMD4(135 / 255, 162 / 255, 132 / 255, 1),
-        SIMD4(66 / 255, 109 / 255,  87 / 255, 1),
-        SIMD4(247 / 255, 227 / 255, 139 / 255, 1)
-    ]
-    
-    private var controlPointsBuffer: MTLBuffer!
-    private let controlPoints: [SIMD2<Float>] = [
-        SIMD2(0.356, 0.246),
-        SIMD2(0.825, 0.082),
-        SIMD2(0.185, 0.92),
-        SIMD2(0.649, 0.756)
-    ]
-    
     var displayLink: CADisplayLink!
     
+    init(config: GradientViewConfig) {
+        self.config = config
+        super.init(frame: .zero)
+    }
+    
     override init(frame: CGRect) {
+        config = GradientViewConfig(colors: [SIMD4<Float>(254 / 255, 244 / 255, 202 / 255, 1),
+                                             SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1),
+                                             SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
+                                             SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1)])
         super.init(frame: frame)
         
         setupMetal()
@@ -67,12 +61,7 @@ final class GradientView: UIView {
         metalLayer.drawableSize = bounds.size
         metalLayer.framebufferOnly = false
         
-        if (controlPointsBuffer == nil) {
-            let controlPoints = self.controlPoints.map { point in
-                SIMD2(point.x * Float(self.bounds.width), point.y * Float(self.bounds.height))
-            }
-            controlPointsBuffer = device.makeBuffer(bytes: controlPoints, length: MemoryLayout.size(ofValue: controlPoints[0]) * controlPoints.count, options: [])
-            
+        if drawableCopy == nil {
             let textureDescriptor = MTLTextureDescriptor()
             textureDescriptor.pixelFormat = .bgra8Unorm
             textureDescriptor.width = Int(self.bounds.width)
@@ -91,9 +80,6 @@ final class GradientView: UIView {
         
         metalLayer.device = device
         metalLayer.pixelFormat = .bgra8Unorm
-        
-        vertexBuffer = device.makeBuffer(bytes: vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, options: [])
-        colorsBuffer = device.makeBuffer(bytes: colors, length: MemoryLayout.size(ofValue: colors[0]) * colors.count, options: [])
         
         let vertexProgram = library.makeFunction(name: "vertex_shader")!
         let fragmentProgram = library.makeFunction(name: "fragment_shader")!
@@ -129,11 +115,14 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
+        let mappedControlPoints = config.controlPoints.map { point -> SIMD2<Float> in
+            SIMD2(point.x * Float(drawable.texture.width), point.y * Float(drawable.texture.height))
+        }
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
-        encoder.setVertexBuffer(vertexBuffer, offset: 0, index: 0)
-        encoder.setFragmentBuffer(colorsBuffer, offset: 0, index: 0)
-        encoder.setFragmentBuffer(controlPointsBuffer, offset: 0, index: 1)
+        encoder.setVertexBytes(vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, index: 0)
+        encoder.setFragmentBytes(config.colors, length: MemoryLayout.size(ofValue: config.colors[0]) * config.colors.count, index: 0)
+        encoder.setFragmentBytes(mappedControlPoints, length: MemoryLayout.size(ofValue: mappedControlPoints[0]) * mappedControlPoints.count, index: 1)
         encoder.drawPrimitives(type: .triangle, vertexStart: 0, vertexCount: vertices.count)
         encoder.endEncoding()
         
@@ -142,37 +131,38 @@ final class GradientView: UIView {
         blur.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
 
         if usesBlur {
-            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
-            blitEncoder.copy(from: drawable.texture,
-                             sourceSlice: 0,
-                             sourceLevel: 0,
-                             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-                             sourceSize: MTLSize(width: drawable.texture.width, height: drawable.texture.height, depth: 1),
-                             to: drawableCopy,
-                             destinationSlice: 0,
-                             destinationLevel: 0,
-                             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
-            blitEncoder.endEncoding()
-            
-            let compute = commandBuffer.makeComputeCommandEncoder()!
-            compute.setComputePipelineState(computePipelineState)
-            compute.setTexture(drawableCopy, index: 0)
-            compute.setTexture(drawable.texture, index: 1)
-            
-            let w = computePipelineState.threadExecutionWidth;
-            let h = computePipelineState.maxTotalThreadsPerThreadgroup / w;
-            let threadsPerThreadgroup = MTLSize(width: w, height: h, depth: 1);
-            let threadgroupsPerGrid = MTLSize(width: (drawable.texture.width + w - 1) / w,
-                                              height: (drawable.texture.height + h - 1) / h,
-                                              depth: 1)
-            
-            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
-            compute.endEncoding()
+//            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
+//            blitEncoder.copy(from: drawable.texture,
+//                             sourceSlice: 0,
+//                             sourceLevel: 0,
+//                             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
+//                             sourceSize: MTLSize(width: drawable.texture.width, height: drawable.texture.height, depth: 1),
+//                             to: drawableCopy,
+//                             destinationSlice: 0,
+//                             destinationLevel: 0,
+//                             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
+//            blitEncoder.endEncoding()
+//            
+//            let compute = commandBuffer.makeComputeCommandEncoder()!
+//            compute.setComputePipelineState(computePipelineState)
+//            compute.setTexture(drawableCopy, index: 0)
+//            compute.setTexture(drawable.texture, index: 1)
+//            
+//            let w = computePipelineState.threadExecutionWidth;
+//            let h = computePipelineState.maxTotalThreadsPerThreadgroup / w;
+//            let threadsPerThreadgroup = MTLSize(width: w, height: h, depth: 1);
+//            let threadgroupsPerGrid = MTLSize(width: (drawable.texture.width + w - 1) / w,
+//                                              height: (drawable.texture.height + h - 1) / h,
+//                                              depth: 1)
+//            
+//            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
+//            compute.endEncoding()
         }
         
         commandBuffer.present(drawable)
         commandBuffer.commit()
     }
+    
     private var usesBlur = false
     func toggleBlur() {
         usesBlur.toggle()
