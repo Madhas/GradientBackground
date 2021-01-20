@@ -24,10 +24,8 @@ final class GradientView: UIView {
         let targetPoints: [SIMD2<Float>]
         
         private let displayLink: CADisplayLink
-        private var linearSteps: [(x: Float, y: Float)]
         private var currentBuffer = 0
         private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: AnimationState.buffersCount)
-        private var currentPoints: [SIMD2<Float>] = []
         
         init(startTime: TimeInterval,
              duration: TimeInterval,
@@ -41,13 +39,6 @@ final class GradientView: UIView {
             self.startPoints = startPoints
             self.targetPoints = targetPoints
             self.displayLink = displayLink
-            currentPoints = targetPoints
-            
-            linearSteps = (0 ..< targetPoints.count).map { idx -> (Float, Float) in
-                let delta = (targetPoints[idx].x - startPoints[idx].x,
-                             targetPoints[idx].y - startPoints[idx].y)
-                return (delta.0  / Float(duration) / 60, delta.1 / Float(duration) / 60)
-            }
         }
         
         mutating func nextBuffer() -> [SIMD2<Float>] {
@@ -62,16 +53,13 @@ final class GradientView: UIView {
                 let previousIdx = currentBuffer == 0 ? AnimationState.buffersCount - 1 : currentBuffer - 1
                 let previousBuffer = animationBuffers[previousIdx].isEmpty ? startPoints : animationBuffers[previousIdx]
                 let ratio = timingFunction.slopeFor(t: Float(t))
-                let nextBuffer = previousBuffer.enumerated().map { idx, point in
-                    SIMD2<Float>(point.x + linearSteps[idx].x * ratio, point.y + linearSteps[idx].y * ratio)
+                let nextBuffer = previousBuffer.enumerated().map { idx, point -> SIMD2<Float> in
+                    let dx = (targetPoints[idx].x - startPoints[idx].x) * Float(t) * ratio
+                    let dy = (targetPoints[idx].y - startPoints[idx].y) * Float(t) * ratio
+                    return SIMD2(point.x + dx, point.y + dy)
                 }
                 animationBuffers[currentBuffer] = nextBuffer
                 return animationBuffers[currentBuffer]
-//                currentPoints = currentPoints.enumerated().map { idx, point in
-//                    SIMD2<Float>(point.x + linearSteps[idx].x * ratio, point.y + linearSteps[idx].y * ratio)
-//                }
-//                animationBuffers[currentBuffer] = currentPoints
-//                return animationBuffers[currentBuffer]
             }
         }
     }
