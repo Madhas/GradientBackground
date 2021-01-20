@@ -13,6 +13,7 @@
 		EA2C26A625B4504900135808 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA2C26A425B4504900135808 /* LaunchScreen.storyboard */; };
 		EA2C26B425B450A000135808 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C26B325B450A000135808 /* GradientView.swift */; };
 		EA2C26B725B45D9600135808 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EA2C26B625B45D9600135808 /* Shaders.metal */; };
+		EA2C282D25B75D0D00135808 /* CAMediaTimingFunction+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */; };
 		EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C283125B7841800135808 /* GradientViewConfig.swift */; };
 /* End PBXBuildFile section */
 
@@ -25,6 +26,7 @@
 		EA2C26A725B4504900135808 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EA2C26B325B450A000135808 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
 		EA2C26B625B45D9600135808 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
+		EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAMediaTimingFunction+Helpers.swift"; sourceTree = "<group>"; };
 		EA2C283125B7841800135808 /* GradientViewConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientViewConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -61,6 +63,7 @@
 				EA2C26AF25B4506000135808 /* Metal */,
 				EA2C269925B4504800135808 /* AppDelegate.swift */,
 				EA2C269D25B4504800135808 /* ViewController.swift */,
+				EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */,
 				EA2C26A225B4504900135808 /* Assets.xcassets */,
 				EA2C26A425B4504900135808 /* LaunchScreen.storyboard */,
 				EA2C26A725B4504900135808 /* Info.plist */,
@@ -151,6 +154,7 @@
 				EA2C26B725B45D9600135808 /* Shaders.metal in Sources */,
 				EA2C269E25B4504800135808 /* ViewController.swift in Sources */,
 				EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */,
+				EA2C282D25B75D0D00135808 /* CAMediaTimingFunction+Helpers.swift in Sources */,
 				EA2C269A25B4504800135808 /* AppDelegate.swift in Sources */,
 				EA2C26B425B450A000135808 /* GradientView.swift in Sources */,
 			);
