@@ -26,7 +26,7 @@ class ViewController: UIViewController {
 
     @objc private func tapped() {
         let timing = CAMediaTimingFunction(name: .easeOut)
-        (view as! GradientView).animate(with: 0.4, timingFunction: timing)
+        (view as! GradientView).animate(with: 0.45, timingFunction: timing)
     }
 }
 

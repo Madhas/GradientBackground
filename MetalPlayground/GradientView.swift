@@ -11,58 +11,6 @@ import MetalPerformanceShaders
 import simd
 
 final class GradientView: UIView {
-    
-    private struct AnimationState {
-        static let buffersCount = 3
-        
-        private(set) var finished = false
-        let startTime: TimeInterval
-        let duration: TimeInterval
-        let timingFunction: CAMediaTimingFunction
-        
-        let startPoints: [SIMD2<Float>]
-        let targetPoints: [SIMD2<Float>]
-        
-        private let displayLink: CADisplayLink
-        private var currentBuffer = 0
-        private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: AnimationState.buffersCount)
-        
-        init(startTime: TimeInterval,
-             duration: TimeInterval,
-             timingFunction: CAMediaTimingFunction,
-             startPoints: [SIMD2<Float>],
-             targetPoints: [SIMD2<Float>],
-             displayLink: CADisplayLink) {
-            self.startTime = startTime
-            self.duration = duration
-            self.timingFunction = timingFunction
-            self.startPoints = startPoints
-            self.targetPoints = targetPoints
-            self.displayLink = displayLink
-        }
-        
-        mutating func nextBuffer() -> [SIMD2<Float>] {
-            defer { currentBuffer = (currentBuffer + 1) % AnimationState.buffersCount }
-            
-            let t = (CACurrentMediaTime() - startTime) / duration
-            if t > 1 {
-                displayLink.invalidate()
-                finished = true
-                return targetPoints
-            } else {
-                let previousIdx = currentBuffer == 0 ? AnimationState.buffersCount - 1 : currentBuffer - 1
-                let previousBuffer = animationBuffers[previousIdx].isEmpty ? startPoints : animationBuffers[previousIdx]
-                let ratio = timingFunction.slopeFor(t: Float(t))
-                let nextBuffer = previousBuffer.enumerated().map { idx, point -> SIMD2<Float> in
-                    let dx = (targetPoints[idx].x - startPoints[idx].x) * Float(t) * ratio
-                    let dy = (targetPoints[idx].y - startPoints[idx].y) * Float(t) * ratio
-                    return SIMD2(point.x + dx, point.y + dy)
-                }
-                animationBuffers[currentBuffer] = nextBuffer
-                return animationBuffers[currentBuffer]
-            }
-        }
-    }
 
     override class var layerClass: AnyClass {
         CAMetalLayer.self
@@ -88,7 +36,7 @@ final class GradientView: UIView {
     ]
     
     // Animations
-    private var animationState: AnimationState?
+    private var animation: GradientViewAnimation?
     private var currentControlPoints: [SIMD2<Float>]
     
     init(config: GradientViewConfig) {
@@ -135,18 +83,18 @@ final class GradientView: UIView {
     // MARK: Public
     
     func animate(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
-        guard animationState == nil else {
+        guard animation == nil else {
             return
         }
         
         let timer = CADisplayLink(target: self, selector: #selector(tick))
         let nextPoints = config.nextControlPoints
-        animationState = AnimationState(startTime: CACurrentMediaTime(),
-                                        duration: duration,
-                                        timingFunction: timingFunction,
-                                        startPoints: currentControlPoints,
-                                        targetPoints: nextPoints,
-                                        displayLink: timer)
+        animation = GradientViewAnimation(startTime: CACurrentMediaTime(),
+                                               duration: duration,
+                                               timingFunction: timingFunction,
+                                               startPoints: currentControlPoints,
+                                               targetPoints: nextPoints,
+                                               displayLink: timer)
         currentControlPoints = nextPoints
         
         timer.add(to: .main, forMode: .default)
@@ -185,7 +133,7 @@ final class GradientView: UIView {
     }
     
     private func render() {
-        let semaphore = DispatchSemaphore(value: AnimationState.buffersCount)
+        let semaphore = DispatchSemaphore(value: GradientViewAnimation.buffersCount)
         semaphore.wait()
         guard let drawable = metalLayer.nextDrawable() else {
             semaphore.signal()
@@ -202,12 +150,12 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
         var controlPoints: [SIMD2<Float>]
-        if var state = animationState {
-            controlPoints = state.nextBuffer().map {
+        if var animation = animation {
+            controlPoints = animation.nextBuffer().map {
                 SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
             }
-            if state.finished {
-                animationState = nil
+            if animation.finished {
+                self.animation = nil
             }
         } else {
             controlPoints = currentControlPoints.map {
