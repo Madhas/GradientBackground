@@ -15,6 +15,7 @@
 		EA2C26B725B45D9600135808 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EA2C26B625B45D9600135808 /* Shaders.metal */; };
 		EA2C282D25B75D0D00135808 /* CAMediaTimingFunction+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */; };
 		EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C283125B7841800135808 /* GradientViewConfig.swift */; };
+		EAFB062125B9D3D70057C7CD /* GradientViewAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		EA2C26B625B45D9600135808 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
 		EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAMediaTimingFunction+Helpers.swift"; sourceTree = "<group>"; };
 		EA2C283125B7841800135808 /* GradientViewConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientViewConfig.swift; sourceTree = "<group>"; };
+		EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientViewAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,6 +76,7 @@
 		EA2C26AF25B4506000135808 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
+				EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */,
 				EA2C26B325B450A000135808 /* GradientView.swift */,
 				EA2C26B625B45D9600135808 /* Shaders.metal */,
 				EA2C283125B7841800135808 /* GradientViewConfig.swift */,
@@ -151,6 +154,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAFB062125B9D3D70057C7CD /* GradientViewAnimation.swift in Sources */,
 				EA2C26B725B45D9600135808 /* Shaders.metal in Sources */,
 				EA2C269E25B4504800135808 /* ViewController.swift in Sources */,
 				EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */,
