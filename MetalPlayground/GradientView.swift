@@ -122,7 +122,7 @@ final class GradientView: UIView {
         
         computePipelineState = try! device.makeComputePipelineState(function: computeProgram)
         
-        blurShader = MPSImageGaussianBlur(device: device, sigma: 30)
+        blurShader = MPSImageGaussianBlur(device: device, sigma: 35)
         blurShader.edgeMode = .clamp
     }
     
@@ -150,7 +150,7 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
         var controlPoints: [SIMD2<Float>]
-        if var animation = animation {
+        if let animation = animation {
             controlPoints = animation.nextBuffer().map {
                 SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
             }
@@ -203,7 +203,7 @@ final class GradientView: UIView {
 //            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
 //            compute.endEncoding()
         
-        commandBuffer.addCompletedHandler { _ in
+        commandBuffer.addCompletedHandler { [weak self] _ in
             semaphore.signal()
         }
         commandBuffer.present(drawable)

@@ -7,7 +7,7 @@
 
 import UIKit
 
-struct GradientViewAnimation {
+final class GradientViewAnimation {
     static let buffersCount = 3
     
     private(set) var finished = false
@@ -19,7 +19,7 @@ struct GradientViewAnimation {
     private let targetPoints: [SIMD2<Float>]
     private let displayLink: CADisplayLink
     
-    private var currentBuffer = 0
+    var currentBuffer = 0
     private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: GradientViewAnimation.buffersCount)
     
     init(startTime: TimeInterval,
@@ -36,7 +36,7 @@ struct GradientViewAnimation {
         self.displayLink = displayLink
     }
     
-    mutating func nextBuffer() -> [SIMD2<Float>] {
+    func nextBuffer() -> [SIMD2<Float>] {
         defer { currentBuffer = (currentBuffer + 1) % GradientViewAnimation.buffersCount }
         
         let t = (CACurrentMediaTime() - startTime) / duration
@@ -45,10 +45,8 @@ struct GradientViewAnimation {
             finished = true
             return targetPoints
         } else {
-            let previousIdx = currentBuffer == 0 ? GradientViewAnimation.buffersCount - 1 : currentBuffer - 1
-            let previousBuffer = animationBuffers[previousIdx].isEmpty ? startPoints : animationBuffers[previousIdx]
             let ratio = timingFunction.slopeFor(t: Float(t))
-            let nextBuffer = previousBuffer.enumerated().map { idx, point -> SIMD2<Float> in
+            let nextBuffer = startPoints.enumerated().map { idx, point -> SIMD2<Float> in
                 let dx = (targetPoints[idx].x - startPoints[idx].x) * Float(t) * ratio
                 let dy = (targetPoints[idx].y - startPoints[idx].y) * Float(t) * ratio
                 return SIMD2(point.x + dx, point.y + dy)
