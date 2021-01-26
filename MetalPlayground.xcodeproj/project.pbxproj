@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA206A2425C0931B0083FC89 /* BottomPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2325C0931B0083FC89 /* BottomPanelView.swift */; };
+		EA206A2725C094340083FC89 /* UIColor+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2625C094340083FC89 /* UIColor+Convenience.swift */; };
+		EA206A2B25C095BB0083FC89 /* UIImage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */; };
 		EA2C269A25B4504800135808 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C269925B4504800135808 /* AppDelegate.swift */; };
 		EA2C269E25B4504800135808 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C269D25B4504800135808 /* ViewController.swift */; };
 		EA2C26A325B4504900135808 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = EA2C26A225B4504900135808 /* Assets.xcassets */; };
@@ -19,6 +22,9 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EA206A2325C0931B0083FC89 /* BottomPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomPanelView.swift; sourceTree = "<group>"; };
+		EA206A2625C094340083FC89 /* UIColor+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Convenience.swift"; sourceTree = "<group>"; };
+		EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Convenience.swift"; sourceTree = "<group>"; };
 		EA2C269625B4504800135808 /* MetalPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA2C269925B4504800135808 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA2C269D25B4504800135808 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -65,8 +71,19 @@
 		EA206A2225C092680083FC89 /* BottomPanel */ = {
 			isa = PBXGroup;
 			children = (
+				EA206A2325C0931B0083FC89 /* BottomPanelView.swift */,
 			);
 			name = BottomPanel;
+			sourceTree = "<group>";
+		};
+		EA206A2E25C09AB10083FC89 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */,
+				EA206A2625C094340083FC89 /* UIColor+Convenience.swift */,
+				EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */,
+			);
+			name = Extensions;
 			sourceTree = "<group>";
 		};
 		EA2C268D25B4504800135808 = {
@@ -88,11 +105,11 @@
 		EA2C269825B4504800135808 /* MetalPlayground */ = {
 			isa = PBXGroup;
 			children = (
+				EA206A2E25C09AB10083FC89 /* Extensions */,
 				EA206A2025C092510083FC89 /* Views */,
 				EA2C269925B4504800135808 /* AppDelegate.swift */,
 				EA2C269D25B4504800135808 /* ViewController.swift */,
 				EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */,
-				EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */,
 				EA2C26A225B4504900135808 /* Assets.xcassets */,
 				EA2C26A425B4504900135808 /* LaunchScreen.storyboard */,
 				EA2C26A725B4504900135808 /* Info.plist */,
@@ -170,13 +187,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA206A2425C0931B0083FC89 /* BottomPanelView.swift in Sources */,
 				EAFB062125B9D3D70057C7CD /* GradientViewAnimation.swift in Sources */,
 				EA2C26B725B45D9600135808 /* Shaders.metal in Sources */,
+				EA206A2B25C095BB0083FC89 /* UIImage+Convenience.swift in Sources */,
 				EA2C269E25B4504800135808 /* ViewController.swift in Sources */,
 				EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */,
 				EA2C282D25B75D0D00135808 /* CAMediaTimingFunction+Helpers.swift in Sources */,
 				EA2C269A25B4504800135808 /* AppDelegate.swift in Sources */,
 				EA2C26B425B450A000135808 /* GradientView.swift in Sources */,
+				EA206A2725C094340083FC89 /* UIColor+Convenience.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
