@@ -105,16 +105,24 @@
 		EA2C269825B4504800135808 /* MetalPlayground */ = {
 			isa = PBXGroup;
 			children = (
+				EAA99DA325C0C01A0020DE02 /* Controllers */,
 				EA206A2E25C09AB10083FC89 /* Extensions */,
 				EA206A2025C092510083FC89 /* Views */,
 				EA2C269925B4504800135808 /* AppDelegate.swift */,
-				EA2C269D25B4504800135808 /* ViewController.swift */,
 				EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */,
 				EA2C26A225B4504900135808 /* Assets.xcassets */,
 				EA2C26A425B4504900135808 /* LaunchScreen.storyboard */,
 				EA2C26A725B4504900135808 /* Info.plist */,
 			);
 			path = MetalPlayground;
+			sourceTree = "<group>";
+		};
+		EAA99DA325C0C01A0020DE02 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				EA2C269D25B4504800135808 /* ViewController.swift */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
