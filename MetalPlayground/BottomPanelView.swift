@@ -21,6 +21,7 @@ final class BottomPanelView: UIView {
         animateButton.setTitleColor(.mainColor, for: .normal)
         animateButton.setTitle("Animate", for: .normal)
         animateButton.titleLabel?.font = .systemFont(ofSize: 17)
+        animateButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         addSubview(animateButton)
         
         settingsButton.setImage(.settings24, for: .normal)
@@ -37,8 +38,8 @@ final class BottomPanelView: UIView {
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let width = animateButton.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: 24)).width
-        animateButton.frame = CGRect(x: bounds.midX - width / 2, y: 18, width: width, height: 24)
+        let width = animateButton.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: bounds.height)).width
+        animateButton.frame = CGRect(x: bounds.midX - width / 2, y: 0, width: width, height: bounds.height)
         
         let size: CGFloat = 32
         settingsButton.frame = CGRect(x: bounds.maxX - size - 8, y: 12, width: size, height: size)
