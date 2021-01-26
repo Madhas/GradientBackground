@@ -8,7 +8,10 @@
 import UIKit
 import simd
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController {
+    
+    private var gradientView: GradientView!
+    private var bottomPanel: BottomPanelView!
     
     override func loadView() {
         super.loadView()
@@ -20,13 +23,31 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        view.addGestureRecognizer(recognizer)
+        gradientView = GradientView(frame: .zero)
+        view.addSubview(gradientView)
+        
+        bottomPanel = BottomPanelView(frame: .zero)
+        bottomPanel.addAnimate(target: self, action: #selector(animateGradient))
+        view.addSubview(bottomPanel)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        let bottomHeight: CGFloat
+        if #available(iOS 11, *) {
+            bottomHeight = 48 + view.safeAreaInsets.bottom
+        } else {
+            bottomHeight = 48
+        }
+        
+        bottomPanel.frame = CGRect(x: 0, y: view.bounds.maxY - bottomHeight, width: view.bounds.width, height: bottomHeight)
+        gradientView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - bottomHeight)
     }
 
-    @objc private func tapped() {
+    @objc private func animateGradient() {
         let timing = CAMediaTimingFunction(name: .easeOut)
-        (view as! GradientView).animate(with: 0.45, timingFunction: timing)
+        gradientView.animate(with: 0.45, timingFunction: timing)
     }
 }
 
