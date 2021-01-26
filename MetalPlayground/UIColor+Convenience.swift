@@ -10,6 +10,6 @@ import UIKit
 extension UIColor {
 
     static var mainColor: UIColor {
-        UIColor(red: 72 / 255, green: 35 / 255, blue: 174 / 255, alpha: 1)
+        UIColor(red: 20 / 255, green: 53 / 255, blue: 30 / 255, alpha: 1)
     }
 }
