@@ -21,13 +21,14 @@ final class GradientView: UIView {
     }
     
     private let config: GradientViewConfig
+    private var handles: [GradientHandleView] = []
     
+    // Metal
     private var device: MTLDevice!
     private var renderPipelineState: MTLRenderPipelineState!
     private var computePipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
-    private var drawableCopy: MTLTexture!
     private var blurShader: MPSImageGaussianBlur!
 
     private let vertices: [SIMD4<Float>] = [
@@ -44,6 +45,7 @@ final class GradientView: UIView {
         currentControlPoints = config.controlPoints
         super.init(frame: .zero)
         
+        setupViews()
         setupMetal()
     }
     
@@ -61,6 +63,11 @@ final class GradientView: UIView {
         
         metalLayer.drawableSize = bounds.size
         
+        handles.enumerated().forEach { idx, handle in
+            handle.center = CGPoint(x: CGFloat(config.controlPoints[idx].x) * bounds.width,
+                                    y: CGFloat(config.controlPoints[idx].y) * bounds.height)
+            let size = handle.isHidden ? CGSize.zero : CGSize(width: 42, height: 42)
+            handle.bounds.size = size
         }
         
         render()
@@ -87,6 +94,20 @@ final class GradientView: UIView {
     }
     
     // MARK: Setup
+    
+    private func setupViews() {
+        for idx in 0 ..< config.controlPoints.count {
+            let view = GradientHandleView()
+            let color = config.colors[idx]
+            view.backgroundColor = UIColor(red: CGFloat(color[0]),
+                                           green: CGFloat(color[1]),
+                                           blue: CGFloat(color[2]),
+                                           alpha: CGFloat(color[3]))
+            view.isHidden = true
+            addSubview(view)
+            handles.append(view)
+        }
+    }
     
     private func setupMetal() {
         device = MTLCreateSystemDefaultDevice()!
