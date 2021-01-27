@@ -47,15 +47,9 @@ final class GradientView: UIView {
         setupMetal()
     }
     
+    @available(*, unavailable)
     override init(frame: CGRect) {
-        config = GradientViewConfig(colors: [SIMD4<Float>(254 / 255, 244 / 255, 202 / 255, 1),
-                                             SIMD4<Float>(66 / 255, 109 / 255,  87 / 255, 1),
-                                             SIMD4<Float>(247 / 255, 227 / 255, 139 / 255, 1),
-                                             SIMD4<Float>(135 / 255, 162 / 255, 132 / 255, 1)])
-        currentControlPoints = config.controlPoints
-        super.init(frame: frame)
-        
-        setupMetal()
+        fatalError("init(frame:) has not been implemented")
     }
     
     required init?(coder: NSCoder) {
@@ -203,7 +197,7 @@ final class GradientView: UIView {
 //            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
 //            compute.endEncoding()
         
-        commandBuffer.addCompletedHandler { [weak self] _ in
+        commandBuffer.addCompletedHandler { _ in
             semaphore.signal()
         }
         commandBuffer.present(drawable)
