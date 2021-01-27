@@ -35,7 +35,13 @@ final class TimingCurveSettingsCell: UICollectionViewCell {
     
     override var isHighlighted: Bool {
         didSet {
-            backgroundColor = isHighlighted ? UIColor.gray.withAlphaComponent(0.6) : .white
+            backgroundColor = isHighlighted ? UIColor.gray.withAlphaComponent(0.3) : .white
+        }
+    }
+    
+    override var isSelected: Bool {
+        didSet {
+            backgroundColor = isSelected ? UIColor.gray.withAlphaComponent(0.3) : .white
         }
     }
     
