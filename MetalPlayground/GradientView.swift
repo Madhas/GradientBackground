@@ -60,15 +60,7 @@ final class GradientView: UIView {
         super.layoutSubviews()
         
         metalLayer.drawableSize = bounds.size
-        metalLayer.framebufferOnly = false
         
-        if drawableCopy == nil {
-            let textureDescriptor = MTLTextureDescriptor()
-            textureDescriptor.pixelFormat = .bgra8Unorm
-            textureDescriptor.width = Int(self.bounds.width)
-            textureDescriptor.height = Int(self.bounds.height)
-            textureDescriptor.usage = .shaderRead
-            drawableCopy = device.makeTexture(descriptor: textureDescriptor)
         }
         
         render()
@@ -103,6 +95,7 @@ final class GradientView: UIView {
         
         metalLayer.device = device
         metalLayer.pixelFormat = .bgra8Unorm
+        metalLayer.framebufferOnly = false
         
         let vertexProgram = library.makeFunction(name: "vertex_shader")!
         let fragmentProgram = library.makeFunction(name: "fragment_shader")!
@@ -169,33 +162,6 @@ final class GradientView: UIView {
         encoder.endEncoding()
         
         blurShader.encode(commandBuffer: commandBuffer, inPlaceTexture: &renderPassDescriptor.colorAttachments[0].texture!, fallbackCopyAllocator: nil)
-
-//            let blitEncoder = commandBuffer.makeBlitCommandEncoder()!
-//            blitEncoder.copy(from: drawable.texture,
-//                             sourceSlice: 0,
-//                             sourceLevel: 0,
-//                             sourceOrigin: MTLOrigin(x: 0, y: 0, z: 0),
-//                             sourceSize: MTLSize(width: drawable.texture.width, height: drawable.texture.height, depth: 1),
-//                             to: drawableCopy,
-//                             destinationSlice: 0,
-//                             destinationLevel: 0,
-//                             destinationOrigin: MTLOrigin(x: 0, y: 0, z: 0))
-//            blitEncoder.endEncoding()
-//            
-//            let compute = commandBuffer.makeComputeCommandEncoder()!
-//            compute.setComputePipelineState(computePipelineState)
-//            compute.setTexture(drawableCopy, index: 0)
-//            compute.setTexture(drawable.texture, index: 1)
-//            
-//            let w = computePipelineState.threadExecutionWidth;
-//            let h = computePipelineState.maxTotalThreadsPerThreadgroup / w;
-//            let threadsPerThreadgroup = MTLSize(width: w, height: h, depth: 1);
-//            let threadgroupsPerGrid = MTLSize(width: (drawable.texture.width + w - 1) / w,
-//                                              height: (drawable.texture.height + h - 1) / h,
-//                                              depth: 1)
-//            
-//            compute.dispatchThreadgroups(threadsPerThreadgroup, threadsPerThreadgroup: threadgroupsPerGrid)
-//            compute.endEncoding()
         
         commandBuffer.addCompletedHandler { _ in
             semaphore.signal()
