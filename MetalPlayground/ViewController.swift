@@ -12,22 +12,18 @@ final class ViewController: UIViewController {
     
     private var gradientView: GradientView!
     private var bottomPanel: BottomPanelView!
-    
-    override func loadView() {
-        super.loadView()
-        
-        let view = GradientView(frame: .zero)
-        self.view = view
-    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        gradientView = GradientView(frame: .zero)
+        
+        let config = GradientViewConfig(colors: Settings.shared.selectedColors)
+        gradientView = GradientView(config: config)
         view.addSubview(gradientView)
         
         bottomPanel = BottomPanelView(frame: .zero)
         bottomPanel.addAnimate(target: self, action: #selector(animateGradient))
+        bottomPanel.addSettings(target: self, action: #selector(showSettings))
         view.addSubview(bottomPanel)
     }
     
@@ -48,6 +44,12 @@ final class ViewController: UIViewController {
     @objc private func animateGradient() {
         let timing = CAMediaTimingFunction(name: .easeOut)
         gradientView.animate(with: 0.45, timingFunction: timing)
+    }
+    
+    @objc private func showSettings() {
+        let settings = SettingsController()
+        let navigation = UINavigationController(rootViewController: settings)
+        present(navigation, animated: true, completion: nil)
     }
 }
 
