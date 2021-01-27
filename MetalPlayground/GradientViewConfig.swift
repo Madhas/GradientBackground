@@ -32,9 +32,9 @@ final class GradientViewConfig {
     init(colors: [SIMD4<Float>]) {
         self.colors = colors    }
     
-    convenience init(colors: [CGColor]) {
+    convenience init(colors: [UIColor]) {
         let components = colors.compactMap { color -> SIMD4<Float>? in
-            guard let components = color.components, components.count == 4 else {
+            guard let components = color.cgColor.components, components.count == 4 else {
                 return nil
             }
             return SIMD4<Float>(Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3]))
