@@ -11,7 +11,7 @@ import simd
 final class ViewController: UIViewController {
     
     private var gradientView: GradientView!
-    private var bottomPanel: BottomPanelView!
+    private var bottomPanel: MainBottomPanelView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,7 @@ final class ViewController: UIViewController {
         gradientView = GradientView(config: config)
         view.addSubview(gradientView)
         
-        bottomPanel = BottomPanelView(frame: .zero)
+        bottomPanel = MainBottomPanelView(frame: .zero)
         bottomPanel.addAnimate(target: self, action: #selector(animateGradient))
         bottomPanel.addSettings(target: self, action: #selector(showSettings))
         view.addSubview(bottomPanel)

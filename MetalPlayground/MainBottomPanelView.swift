@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class BottomPanelView: UIView {
+final class MainBottomPanelView: UIView {
 
     private let animateButton: UIButton
     private let settingsButton: UIButton

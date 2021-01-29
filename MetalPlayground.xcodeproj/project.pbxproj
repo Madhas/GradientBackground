@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		EA206A2425C0931B0083FC89 /* BottomPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2325C0931B0083FC89 /* BottomPanelView.swift */; };
+		EA206A2425C0931B0083FC89 /* MainBottomPanelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */; };
 		EA206A2725C094340083FC89 /* UIColor+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2625C094340083FC89 /* UIColor+Convenience.swift */; };
 		EA206A2B25C095BB0083FC89 /* UIImage+Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */; };
 		EA2C269A25B4504800135808 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C269925B4504800135808 /* AppDelegate.swift */; };
@@ -28,7 +28,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		EA206A2325C0931B0083FC89 /* BottomPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomPanelView.swift; sourceTree = "<group>"; };
+		EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBottomPanelView.swift; sourceTree = "<group>"; };
 		EA206A2625C094340083FC89 /* UIColor+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Convenience.swift"; sourceTree = "<group>"; };
 		EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Convenience.swift"; sourceTree = "<group>"; };
 		EA2C269625B4504800135808 /* MetalPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -64,7 +64,7 @@
 		EA206A2025C092510083FC89 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				EA206A2225C092680083FC89 /* BottomPanel */,
+				EA206A2225C092680083FC89 /* MainBottomPanel */,
 				EA206A2125C092580083FC89 /* Gradient */,
 			);
 			name = Views;
@@ -81,12 +81,12 @@
 			name = Gradient;
 			sourceTree = "<group>";
 		};
-		EA206A2225C092680083FC89 /* BottomPanel */ = {
+		EA206A2225C092680083FC89 /* MainBottomPanel */ = {
 			isa = PBXGroup;
 			children = (
-				EA206A2325C0931B0083FC89 /* BottomPanelView.swift */,
+				EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */,
 			);
-			name = BottomPanel;
+			name = MainBottomPanel;
 			sourceTree = "<group>";
 		};
 		EA206A2E25C09AB10083FC89 /* Extensions */ = {
@@ -245,7 +245,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EA206A2425C0931B0083FC89 /* BottomPanelView.swift in Sources */,
+				EA206A2425C0931B0083FC89 /* MainBottomPanelView.swift in Sources */,
 				EAFB062125B9D3D70057C7CD /* GradientViewAnimation.swift in Sources */,
 				EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */,
 				EAA99E3125C1DEA00020DE02 /* EditColorsController.swift in Sources */,
