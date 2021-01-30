@@ -105,6 +105,10 @@ extension SettingsController: UICollectionViewDelegateFlowLayout {
 
 extension SettingsController: UIViewControllerTransitioningDelegate {
     
+    func presentationController(forPresented presented: UIViewController, presenting: UIViewController?, source: UIViewController) -> UIPresentationController? {
+        return EditColorsPresentationController(presentedViewController: presented, presenting: presenting)
+    }
+    
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
         guard let cell = collectionView.visibleCells.first(where: { $0 is ColorSettingsCell }) as? ColorSettingsCell else {

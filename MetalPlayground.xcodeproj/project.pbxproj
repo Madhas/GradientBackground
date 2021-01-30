@@ -27,6 +27,7 @@
 		EABE3D7925C5A01800D359DE /* EditColorsAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */; };
 		EABE3D7C25C5E88200D359DE /* EditColorsBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */; };
 		EABE3D8025C5EBBA00D359DE /* TopHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */; };
+		EABE3D8325C5EF1200D359DE /* EditColorsPresentationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D8225C5EF1200D359DE /* EditColorsPresentationController.swift */; };
 		EAFB062125B9D3D70057C7CD /* GradientViewAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */; };
 /* End PBXBuildFile section */
 
@@ -53,6 +54,7 @@
 		EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsAnimator.swift; sourceTree = "<group>"; };
 		EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsBottomView.swift; sourceTree = "<group>"; };
 		EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopHeaderView.swift; sourceTree = "<group>"; };
+		EABE3D8225C5EF1200D359DE /* EditColorsPresentationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsPresentationController.swift; sourceTree = "<group>"; };
 		EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GradientViewAnimation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -153,9 +155,10 @@
 		EAA99E0925C1BB650020DE02 /* System */ = {
 			isa = PBXGroup;
 			children = (
+				EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */,
+				EABE3D8225C5EF1200D359DE /* EditColorsPresentationController.swift */,
 				EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */,
 				EAA99E0A25C1BB840020DE02 /* Settings.swift */,
-				EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */,
 			);
 			name = System;
 			sourceTree = "<group>";
@@ -235,6 +238,7 @@
 				EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */,
 				EAA99E3125C1DEA00020DE02 /* EditColorsController.swift in Sources */,
 				EA2C26B725B45D9600135808 /* Shaders.metal in Sources */,
+				EABE3D8325C5EF1200D359DE /* EditColorsPresentationController.swift in Sources */,
 				EABE3D7925C5A01800D359DE /* EditColorsAnimator.swift in Sources */,
 				EA206A2B25C095BB0083FC89 /* UIImage+Convenience.swift in Sources */,
 				EA2C269E25B4504800135808 /* ViewController.swift in Sources */,
