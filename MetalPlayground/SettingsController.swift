@@ -107,24 +107,18 @@ extension SettingsController: UIViewControllerTransitioningDelegate {
     
     func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         
-        guard let gradientView = collectionView.visibleCells.compactMap({ return self.gradientView(from: $0) }).first else {
+        guard let cell = collectionView.visibleCells.first(where: { $0 is ColorSettingsCell }) as? ColorSettingsCell else {
             return nil
         }
         
-        return EditColorsAnimator(gradientView: gradientView, isPresenting: true)
+        return EditColorsAnimator(transition: .present(cell))
     }
     
-    private func gradientView(from view: UIView) -> GradientView? {
-        if let view = view as? GradientView {
-            return view
-        } else {
-            for subview in view.subviews {
-                if let gradient = gradientView(from: subview) {
-                    return gradient
-                }
-            }
+    func animationController(forDismissed dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        guard let cell = collectionView.visibleCells.first(where: { $0 is ColorSettingsCell }) as? ColorSettingsCell else {
+            return nil
         }
         
-        return nil
+        return EditColorsAnimator(transition: .dismiss(cell))
     }
 }
