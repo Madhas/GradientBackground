@@ -39,7 +39,11 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         toController.view.addSubview(gradientView)
         toController.gradientView = gradientView
         
-        toController.containerView.frame.origin.y = toController.view.bounds.height
+        toController.topPanel.frame.size.width = containerView.bounds.width
+        toController.topPanel.frame.origin.y = -toController.topHeight
+        toController.bottomPanel.frame.size.width = containerView.bounds.width
+        toController.bottomPanel.frame.origin.y = toController.view.bounds.height
+        
         containerView.addSubview(toController.view)
         toController.view.frame = fromFrame
         gradientView.frame = toController.view.bounds
