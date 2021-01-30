@@ -9,7 +9,10 @@ import UIKit
 
 final class ColorSettingsCell: UICollectionViewCell {
     
-    private let gradientView: GradientView
+    private let bottomHeight: CGFloat = 48
+    
+    var gradientView: GradientView?
+    
     private let titleContainerView: UIView
     private let titleLabel: UILabel
     private let separatorView: UIView
@@ -25,7 +28,7 @@ final class ColorSettingsCell: UICollectionViewCell {
         
         backgroundColor = .white
         
-        addSubview(gradientView)
+        addSubview(gradientView!)
         addSubview(titleContainerView)
         
         titleLabel.text = "Edit colors"
@@ -52,16 +55,21 @@ final class ColorSettingsCell: UICollectionViewCell {
         }
     }
     
+    var gradientFrame: CGRect {
+        let bottomHeight = min(self.bottomHeight, bounds.height)
+        return CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height - bottomHeight)
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        let bottomHeight = min(48, bounds.height)
+        let bottomHeight = min(self.bottomHeight, bounds.height)
         titleContainerView.frame = CGRect(x: 0, y: bounds.maxY - bottomHeight, width: bounds.width, height: bottomHeight)
         
         let titleWidth = titleLabel.sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: bottomHeight)).width
         titleLabel.frame = CGRect(x: 14, y: 0, width: titleWidth, height: bottomHeight)
         
-        gradientView.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height - bottomHeight)
+        gradientView?.frame = CGRect(x: 0, y: 0, width: bounds.width, height: bounds.height - bottomHeight)
         
         let pixel = 1 / UIScreen.main.scale
         separatorView.frame = CGRect(x: 14, y: bounds.maxY - pixel, width: bounds.width - 14, height: pixel)
