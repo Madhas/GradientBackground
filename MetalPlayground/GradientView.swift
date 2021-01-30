@@ -93,6 +93,12 @@ final class GradientView: UIView {
         timer.add(to: .main, forMode: .default)
     }
     
+    func setHandles(hidden: Bool) {
+        for handle in handles {
+            handle.isHidden = hidden
+        }
+    }
+    
     // MARK: Setup
     
     private func setupViews() {
