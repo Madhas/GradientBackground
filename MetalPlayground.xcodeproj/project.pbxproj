@@ -64,8 +64,8 @@
 		EA206A2025C092510083FC89 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				EA206A2225C092680083FC89 /* MainBottomPanel */,
 				EA206A2125C092580083FC89 /* Gradient */,
+				EA206A2225C092680083FC89 /* MainBottomPanel */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -134,9 +134,9 @@
 		EAA99DA325C0C01A0020DE02 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				EA2C269D25B4504800135808 /* ViewController.swift */,
-				EAA99DFF25C1B3910020DE02 /* SettingsController.swift */,
 				EAA99E3025C1DEA00020DE02 /* EditColorsController.swift */,
+				EAA99DFF25C1B3910020DE02 /* SettingsController.swift */,
+				EA2C269D25B4504800135808 /* ViewController.swift */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -144,35 +144,19 @@
 		EAA99E0325C1B4520020DE02 /* CollectionCells */ = {
 			isa = PBXGroup;
 			children = (
-				EAA99E2725C1CD640020DE02 /* TimingCurveSettings */,
-				EAA99E0425C1B45F0020DE02 /* ColorSettings */,
+				EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */,
+				EAA99E2825C1CD7D0020DE02 /* TimingCurveSettingsCell.swift */,
 			);
 			name = CollectionCells;
-			sourceTree = "<group>";
-		};
-		EAA99E0425C1B45F0020DE02 /* ColorSettings */ = {
-			isa = PBXGroup;
-			children = (
-				EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */,
-			);
-			name = ColorSettings;
 			sourceTree = "<group>";
 		};
 		EAA99E0925C1BB650020DE02 /* System */ = {
 			isa = PBXGroup;
 			children = (
-				EAA99E0A25C1BB840020DE02 /* Settings.swift */,
 				EAFB062025B9D3D70057C7CD /* GradientViewAnimation.swift */,
+				EAA99E0A25C1BB840020DE02 /* Settings.swift */,
 			);
 			name = System;
-			sourceTree = "<group>";
-		};
-		EAA99E2725C1CD640020DE02 /* TimingCurveSettings */ = {
-			isa = PBXGroup;
-			children = (
-				EAA99E2825C1CD7D0020DE02 /* TimingCurveSettingsCell.swift */,
-			);
-			name = TimingCurveSettings;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
