@@ -15,8 +15,8 @@ final class EditColorsController: UIViewController {
     var shouldLoadGradientView = true
     
     var gradientView: GradientView?
-    var topPanel: UIView!
-    var bottomPanel: UIView!
+    var topPanel: UIView?
+    var bottomPanel: UIView?
     
     private var closeButton: UIButton!
     private var applyButton: UIButton!
@@ -32,19 +32,22 @@ final class EditColorsController: UIViewController {
             self.gradientView = gradientView
         }
         
-        topPanel = UIView()
+        let topPanel = UIView()
         topPanel.backgroundColor = .white
         view.addSubview(topPanel)
+        self.topPanel = topPanel
         
-        bottomPanel = UIView()
+        let bottomPanel = UIView()
         bottomPanel.backgroundColor = .white
         view.addSubview(bottomPanel)
+        self.bottomPanel = bottomPanel
         
         closeButton = UIButton(type: .system)
         closeButton.frame.origin.x = view.bounds.maxX
         closeButton.setTitle("Close", for: .normal)
-        closeButton.titleLabel?.font = .systemFont(ofSize: 17)
+        closeButton.titleLabel?.font = .systemFont(ofSize: 17, weight: .medium)
         closeButton.setTitleColor(.mainColor, for: .normal)
+        closeButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
         topPanel.addSubview(closeButton)
         
         applyButton = UIButton(type: .system)
@@ -63,6 +66,10 @@ final class EditColorsController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
+        guard let topPanel = self.topPanel, let gradientView = self.gradientView, let bottomPanel = self.bottomPanel else {
+            return
+        }
+        
         let topHeight: CGFloat
         let bottomHeight: CGFloat
         if #available(iOS 11, *) {
@@ -75,11 +82,11 @@ final class EditColorsController: UIViewController {
         
         topPanel.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: topHeight)
         bottomPanel.frame = CGRect(x: 0,
-                                     y: view.bounds.height - bottomHeight,
-                                     width: view.bounds.width,
-                                     height: bottomHeight)
+                                    y: view.bounds.height - bottomHeight,
+                                    width: view.bounds.width,
+                                    height: bottomHeight)
         
-        gradientView?.frame = CGRect(x: 0,
+        gradientView.frame = CGRect(x: 0,
                                      y: topHeight,
                                      width: view.bounds.width,
                                      height: view.bounds.height - bottomHeight - topHeight)
@@ -92,5 +99,9 @@ final class EditColorsController: UIViewController {
                                       y: 0,
                                       width: bottomPanel.bounds.width / 2,
                                       height: self.bottomHeight)
+    }
+    
+    @objc private func closeTapped() {
+        dismiss(animated: true, completion: nil)
     }
 }
