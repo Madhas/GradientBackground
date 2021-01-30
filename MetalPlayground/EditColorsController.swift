@@ -11,19 +11,22 @@ final class EditColorsController: UIViewController {
     
     private let bottomHeight: CGFloat = 48
     
-    var gradientView: GradientView!
+    var shouldLoadGradientView = true
     
-    private var containerView: UIView!
+    var gradientView: GradientView?
+    var containerView: UIView!
+    
     private var applyButton: UIButton!
     private var defaultsButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if gradientView == nil {
+        if shouldLoadGradientView {
             let config = GradientViewConfig(colors: Settings.shared.selectedColors)
-            gradientView = GradientView(config: config)
+            let gradientView = GradientView(config: config)
             view.addSubview(gradientView)
+            self.gradientView = gradientView
         }
         
         containerView = UIView()
@@ -57,7 +60,7 @@ final class EditColorsController: UIViewController {
                                      y: view.bounds.height - bottomHeight,
                                      width: view.bounds.width,
                                      height: bottomHeight)
-        gradientView.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - bottomHeight)
+        gradientView?.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height - bottomHeight)
         
         applyButton.frame = CGRect(x: 0, y: 0, width: containerView.bounds.width / 2, height: self.bottomHeight)
         defaultsButton.frame = CGRect(x: containerView.bounds.width / 2,
