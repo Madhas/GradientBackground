@@ -22,7 +22,7 @@ final class TimingCurveSettingsCell: UICollectionViewCell {
         titleLabel.font = .systemFont(ofSize: 17)
         addSubview(titleLabel)
         
-        valueLabel.text = "Smth"
+        valueLabel.text = Settings.shared.selectedTimingFunctionName
         valueLabel.font = .systemFont(ofSize: 17)
         valueLabel.textColor = .darkGray
         valueLabel.textAlignment = .right
