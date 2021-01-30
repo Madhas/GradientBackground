@@ -9,12 +9,15 @@ import UIKit
 
 final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning {
     
-    private let gradientView: GradientView
-    private let isPresenting: Bool
+    enum Transition {
+        case present(ColorSettingsCell)
+        case dismiss(ColorSettingsCell)
+    }
     
-    init(gradientView: GradientView, isPresenting: Bool) {
-        self.gradientView = gradientView
-        self.isPresenting = isPresenting
+    private let transition: Transition
+    
+    init(transition: Transition) {
+        self.transition = transition
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -22,13 +25,18 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        if isPresenting {
-            animatePresenting(using: transitionContext)
+        switch transition {
+        case let .present(cell):
+            animatePresent(transitionContext: transitionContext, cell: cell)
+        case let .dismiss(cell):
+            animateDismiss(transitionContext: transitionContext, cell: cell)
         }
     }
     
-    private func animatePresenting(using transitionContext: UIViewControllerContextTransitioning) {
-        guard let toController = transitionContext.viewController(forKey: .to) as? EditColorsController, let fromController = transitionContext.viewController(forKey: .from) else {
+    private func animatePresent(transitionContext: UIViewControllerContextTransitioning, cell: ColorSettingsCell) {
+        guard let toController = transitionContext.viewController(forKey: .to) as? EditColorsController,
+              let fromController = transitionContext.viewController(forKey: .from),
+              let gradientView = cell.gradientView else {
             return
         }
         let containerView = transitionContext.containerView
@@ -38,11 +46,12 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         gradientView.setHandles(hidden: false)
         toController.view.addSubview(gradientView)
         toController.gradientView = gradientView
+        cell.gradientView = nil
         
-        toController.topPanel.frame.size.width = containerView.bounds.width
-        toController.topPanel.frame.origin.y = -toController.topHeight
-        toController.bottomPanel.frame.size.width = containerView.bounds.width
-        toController.bottomPanel.frame.origin.y = toController.view.bounds.height
+        toController.topPanel?.frame.size.width = containerView.bounds.width
+        toController.topPanel?.frame.origin.y = -toController.topHeight
+        toController.bottomPanel?.frame.size.width = containerView.bounds.width
+        toController.bottomPanel?.frame.origin.y = toController.view.bounds.height
         
         containerView.addSubview(toController.view)
         toController.view.frame = fromFrame
@@ -55,6 +64,46 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             toController.view.frame = containerView.bounds
             toController.view.layoutIfNeeded()
         } completion: {
+            transitionContext.completeTransition($0)
+        }
+    }
+    
+    private func animateDismiss(transitionContext: UIViewControllerContextTransitioning, cell: ColorSettingsCell) {
+        guard let fromController = transitionContext.viewController(forKey: .from) as? EditColorsController,
+              let toController = transitionContext.viewController(forKey: .to),
+              let gradientView = fromController.gradientView,
+              let topPanel = fromController.topPanel,
+              let bottomPanel = fromController.bottomPanel else {
+            return
+        }
+        
+        let containerView = transitionContext.containerView
+        
+        topPanel.removeFromSuperview()
+        bottomPanel.removeFromSuperview()
+        gradientView.removeFromSuperview()
+        containerView.addSubview(topPanel)
+        containerView.addSubview(bottomPanel)
+        containerView.addSubview(gradientView)
+        fromController.topPanel = nil
+        fromController.gradientView = nil
+        fromController.bottomPanel = nil
+        
+        gradientView.setHandles(hidden: true)
+        let duration = transitionDuration(using: transitionContext)
+        UIView.animate(withDuration: duration) {
+            toController.view.transform = .identity
+            gradientView.frame = fromController.view.convert(cell.gradientFrame, from: cell)
+            topPanel.frame.origin.y = -topPanel.bounds.height
+            bottomPanel.frame.origin.y = containerView.bounds.height
+        } completion: {
+            gradientView.removeFromSuperview()
+            cell.addSubview(gradientView)
+            cell.gradientView = gradientView
+            
+            cell.setNeedsLayout()
+            cell.layoutIfNeeded()
+            
             transitionContext.completeTransition($0)
         }
 
