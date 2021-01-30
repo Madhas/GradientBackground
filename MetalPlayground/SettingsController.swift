@@ -10,7 +10,7 @@ import UIKit
 class SettingsController: UIViewController {
     
     private var collectionView: UICollectionView!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -85,5 +85,46 @@ extension SettingsController: UICollectionViewDelegateFlowLayout {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
+        
+        switch indexPath.item {
+        case 0:
+            let controller = EditColorsController()
+            controller.modalPresentationStyle = .custom
+            controller.transitioningDelegate = self
+            controller.shouldLoadGradientView = false
+            present(controller, animated: true, completion: nil)
+        case 1:
+            break
+        default:
+            fatalError("Unexpected number of cells")
+        }
+    }
+}
+
+// MARK: UIViewControllerTransitioningDelegate
+
+extension SettingsController: UIViewControllerTransitioningDelegate {
+    
+    func animationController(forPresented presented: UIViewController, presenting: UIViewController, source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        
+        guard let gradientView = collectionView.visibleCells.compactMap({ return self.gradientView(from: $0) }).first else {
+            return nil
+        }
+        
+        return EditColorsAnimator(gradientView: gradientView, isPresenting: true)
+    }
+    
+    private func gradientView(from view: UIView) -> GradientView? {
+        if let view = view as? GradientView {
+            return view
+        } else {
+            for subview in view.subviews {
+                if let gradient = gradientView(from: subview) {
+                    return gradient
+                }
+            }
+        }
+        
+        return nil
     }
 }
