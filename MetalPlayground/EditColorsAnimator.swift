@@ -49,9 +49,16 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         cell.gradientView = nil
         
         toController.topPanel?.frame.size.width = containerView.bounds.width
-        toController.topPanel?.frame.origin.y = -toController.topHeight
+        if #available(iOS 11, *) {
+            toController.topPanel?.frame.origin.y = -(toController.topHeight + containerView.safeAreaInsets.top)
+        } else {
+            toController.topPanel?.frame.origin.y = -toController.topHeight
+        }
+        toController.topPanel?.layoutIfNeeded()
+        
         toController.bottomPanel?.frame.size.width = containerView.bounds.width
         toController.bottomPanel?.frame.origin.y = toController.view.bounds.height
+        toController.bottomPanel?.layoutIfNeeded()
         
         containerView.addSubview(toController.view)
         toController.view.frame = fromFrame
