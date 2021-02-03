@@ -21,7 +21,6 @@ final class MainBottomPanelView: UIView {
         animateButton.setTitleColor(.mainColor, for: .normal)
         animateButton.setTitle("Animate", for: .normal)
         animateButton.titleLabel?.font = .systemFont(ofSize: 17)
-        animateButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 0, bottom: 20, right: 0)
         addSubview(animateButton)
         
         settingsButton.setImage(.settings24, for: .normal)
@@ -39,7 +38,13 @@ final class MainBottomPanelView: UIView {
         super.layoutSubviews()
         
         let width = animateButton.sizeThatFits(CGSize(width: CGFloat.greatestFiniteMagnitude, height: bounds.height)).width
-        animateButton.frame = CGRect(x: bounds.midX - width / 2, y: 0, width: width, height: bounds.height)
+        let height: CGFloat
+        if #available(iOS 11, *) {
+            height = bounds.height - safeAreaInsets.bottom
+        } else {
+            height = bounds.height
+        }
+        animateButton.frame = CGRect(x: bounds.midX - width / 2, y: 0, width: width, height: height)
         
         let size: CGFloat = 32
         settingsButton.frame = CGRect(x: bounds.maxX - size - 8, y: 12, width: size, height: size)
