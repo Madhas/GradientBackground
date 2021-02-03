@@ -18,6 +18,7 @@
 		EA2C26B725B45D9600135808 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = EA2C26B625B45D9600135808 /* Shaders.metal */; };
 		EA2C282D25B75D0D00135808 /* CAMediaTimingFunction+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */; };
 		EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA2C283125B7841800135808 /* GradientViewConfig.swift */; };
+		EAA5664825CB47E300FCFBF8 /* ColorSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5664725CB47E300FCFBF8 /* ColorSelectionView.swift */; };
 		EAA99E0025C1B3910020DE02 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99DFF25C1B3910020DE02 /* SettingsController.swift */; };
 		EAA99E0625C1B6F80020DE02 /* ColorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */; };
 		EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E0A25C1BB840020DE02 /* Settings.swift */; };
@@ -45,6 +46,7 @@
 		EA2C26B625B45D9600135808 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.metal; };
 		EA2C282C25B75D0C00135808 /* CAMediaTimingFunction+Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CAMediaTimingFunction+Helpers.swift"; sourceTree = "<group>"; };
 		EA2C283125B7841800135808 /* GradientViewConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientViewConfig.swift; sourceTree = "<group>"; };
+		EAA5664725CB47E300FCFBF8 /* ColorSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSelectionView.swift; sourceTree = "<group>"; };
 		EAA99DFF25C1B3910020DE02 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSettingsCell.swift; sourceTree = "<group>"; };
 		EAA99E0A25C1BB840020DE02 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -73,6 +75,7 @@
 			isa = PBXGroup;
 			children = (
 				EA206A2125C092580083FC89 /* Gradient */,
+				EAA5664725CB47E300FCFBF8 /* ColorSelectionView.swift */,
 				EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */,
 				EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */,
 				EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */,
@@ -245,6 +248,7 @@
 				EAA99E0025C1B3910020DE02 /* SettingsController.swift in Sources */,
 				EAA99E3425C1E2610020DE02 /* GradientHandleView.swift in Sources */,
 				EAA99E0625C1B6F80020DE02 /* ColorSettingsCell.swift in Sources */,
+				EAA5664825CB47E300FCFBF8 /* ColorSelectionView.swift in Sources */,
 				EABE3D7C25C5E88200D359DE /* EditColorsBottomView.swift in Sources */,
 				EAA99E2925C1CD7D0020DE02 /* TimingCurveSettingsCell.swift in Sources */,
 				EA2C283225B7841800135808 /* GradientViewConfig.swift in Sources */,
