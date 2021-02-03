@@ -48,10 +48,6 @@ final class EditColorsController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        guard let topPanel = self.topPanel, let gradientView = self.gradientView, let bottomPanel = self.bottomPanel else {
-            return
-        }
-        
         let topHeight: CGFloat
         let bottomHeight: CGFloat
         if #available(iOS 11, *) {
@@ -62,16 +58,23 @@ final class EditColorsController: UIViewController {
             bottomHeight = self.bottomHeight
         }
         
-        topPanel.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: topHeight)
-        bottomPanel.frame = CGRect(x: 0,
-                                    y: view.bounds.height - bottomHeight,
-                                    width: view.bounds.width,
-                                    height: bottomHeight)
+        if let topPanel = self.topPanel {
+            topPanel.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: topHeight)
+        }
         
-        gradientView.frame = CGRect(x: 0,
-                                     y: topHeight,
-                                     width: view.bounds.width,
-                                     height: view.bounds.height - bottomHeight - topHeight)
+        if let bottomPanel = self.bottomPanel {
+            bottomPanel.frame = CGRect(x: 0,
+                                        y: view.bounds.height - bottomHeight,
+                                        width: view.bounds.width,
+                                        height: bottomHeight)
+        }
+        
+        if let gradientView = self.gradientView {
+            gradientView.frame = CGRect(x: 0,
+                                         y: topHeight,
+                                         width: view.bounds.width,
+                                         height: view.bounds.height - bottomHeight - topHeight)
+        }
     }
     
     @objc private func closeTapped() {
