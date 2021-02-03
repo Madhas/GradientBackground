@@ -11,6 +11,8 @@ final class EditColorsBottomView: UIView {
 
     let applyButton: UIButton
     let defaultsButton: UIButton
+    
+    var blockLayoutSubviews = false
 
     override init(frame: CGRect) {
         applyButton = UIButton(type: .system)
@@ -35,6 +37,8 @@ final class EditColorsBottomView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        guard !blockLayoutSubviews else { return }
         
         let height: CGFloat
         if #available(iOS 11, *) {

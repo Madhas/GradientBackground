@@ -125,6 +125,9 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         let gradientTargetFrame = containerView.convert(cell.gradientFrame, from: cell)
         toController.view.transform = previousTransform
         
+        topPanel.blockLayoutSubviews = true
+        bottomPanel.blockLayoutSubviews = true
+        
         let duration = transitionDuration(using: transitionContext)
         UIView.animateKeyframes(withDuration: duration, delay: 0, options: []) {
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {

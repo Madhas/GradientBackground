@@ -11,6 +11,8 @@ final class TopHeaderView: UIView {
 
     let actionButton: UIButton
     
+    var blockLayoutSubviews = false
+    
     override init(frame: CGRect) {
         actionButton = UIButton(type: .system)
         
@@ -27,6 +29,8 @@ final class TopHeaderView: UIView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        
+        guard !blockLayoutSubviews else { return }
         
         let height: CGFloat
         if #available(iOS 11, *) {
