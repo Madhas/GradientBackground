@@ -10,7 +10,7 @@ import UIKit
 final class EditColorsController: UIViewController {
     
     let topHeight: CGFloat = 48
-    private let bottomHeight: CGFloat = 48
+    let bottomHeight: CGFloat = 48
     
     var shouldLoadGradientView = true
     
@@ -31,6 +31,7 @@ final class EditColorsController: UIViewController {
         }
         
         let topPanel = TopHeaderView()
+        topPanel.clipsToBounds = true
         topPanel.backgroundColor = .white
         topPanel.actionButton.setTitle("Close", for: .normal)
         topPanel.actionButton.addTarget(self, action: #selector(closeTapped), for: .touchUpInside)
@@ -38,6 +39,7 @@ final class EditColorsController: UIViewController {
         self.topPanel = topPanel
         
         let bottomPanel = EditColorsBottomView()
+        bottomPanel.clipsToBounds = true
         bottomPanel.backgroundColor = .white
         view.addSubview(bottomPanel)
         self.bottomPanel = bottomPanel

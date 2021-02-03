@@ -21,7 +21,7 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        return 0.3
+        return 0.32
     }
     
     func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
@@ -41,36 +41,58 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         }
         let containerView = transitionContext.containerView
         
+        let topPanelHeight: CGFloat
+        let bottomPanelHeight: CGFloat
+        if #available(iOS 11, *) {
+            topPanelHeight = toController.topHeight + containerView.safeAreaInsets.top
+            bottomPanelHeight = toController.bottomHeight + containerView.safeAreaInsets.bottom
+        } else {
+            topPanelHeight = toController.topHeight
+            bottomPanelHeight = toController.bottomHeight
+        }
+        
         let fromFrame = containerView.convert(gradientView.frame, from: gradientView.superview)
         gradientView.removeFromSuperview()
         gradientView.setHandles(hidden: false)
-        toController.view.addSubview(gradientView)
-        toController.gradientView = gradientView
+        gradientView.frame = fromFrame
+        containerView.addSubview(gradientView)
         cell.gradientView = nil
         
-        toController.topPanel?.frame.size.width = containerView.bounds.width
-        if #available(iOS 11, *) {
-            toController.topPanel?.frame.origin.y = -(toController.topHeight + containerView.safeAreaInsets.top)
-        } else {
-            toController.topPanel?.frame.origin.y = -toController.topHeight
-        }
-        toController.topPanel?.layoutIfNeeded()
+        let gradientTargetFrame = CGRect(x: 0,
+                                         y: topPanelHeight,
+                                         width: containerView.bounds.width,
+                                         height: containerView.bounds.height - topPanelHeight - bottomPanelHeight)
         
-        toController.bottomPanel?.frame.size.width = containerView.bounds.width
-        toController.bottomPanel?.frame.origin.y = toController.view.bounds.height
-        toController.bottomPanel?.layoutIfNeeded()
+        toController.view.frame = containerView.bounds
+        
+        toController.topPanel?.frame.origin.y = topPanelHeight
+        toController.topPanel?.frame.size = CGSize(width: containerView.bounds.width, height: 0)
+        
+        toController.bottomPanel?.frame.origin.y = gradientTargetFrame.maxY
+        toController.bottomPanel?.frame.size = CGSize(width: containerView.bounds.width, height: 0)
         
         containerView.addSubview(toController.view)
-        toController.view.frame = fromFrame
-        gradientView.frame = toController.view.bounds
         
         let duration = transitionDuration(using: transitionContext)
-        toController.view.setNeedsLayout()
-        UIView.animate(withDuration: duration) {
-            fromController.view.transform = CGAffineTransform(scaleX: 0.96, y: 0.96)
-            toController.view.frame = containerView.bounds
-            toController.view.layoutIfNeeded()
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: []) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
+                fromController.view.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            }
+
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.65) {
+                gradientView.frame = gradientTargetFrame
+            }
+            
+            UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.35) {
+                toController.topPanel?.frame.origin.y = 0
+                toController.topPanel?.frame.size.height = topPanelHeight
+                
+                toController.bottomPanel?.frame.size.height = bottomPanelHeight
+            }
         } completion: {
+            gradientView.removeFromSuperview()
+            toController.view.addSubview(gradientView)
+            toController.gradientView = gradientView
             transitionContext.completeTransition($0)
         }
     }
@@ -97,12 +119,28 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         fromController.bottomPanel = nil
         
         gradientView.setHandles(hidden: true)
+        
+        let previousTransform = toController.view.transform
+        toController.view.transform = .identity
+        let gradientTargetFrame = containerView.convert(cell.gradientFrame, from: cell)
+        toController.view.transform = previousTransform
+        
         let duration = transitionDuration(using: transitionContext)
-        UIView.animate(withDuration: duration) {
-            toController.view.transform = .identity
-            gradientView.frame = fromController.view.convert(cell.gradientFrame, from: cell)
-            topPanel.frame.origin.y = -topPanel.bounds.height
-            bottomPanel.frame.origin.y = containerView.bounds.height
+        UIView.animateKeyframes(withDuration: duration, delay: 0, options: []) {
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 1) {
+                toController.view.transform = .identity
+            }
+            
+            UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.35) {
+                topPanel.frame.origin.y = topPanel.bounds.height
+                topPanel.frame.size.height = 0
+                
+                bottomPanel.frame.size.height = 0
+            }
+            
+            UIView.addKeyframe(withRelativeStartTime: 0.35, relativeDuration: 0.65) {
+                gradientView.frame = gradientTargetFrame
+            }
         } completion: {
             gradientView.removeFromSuperview()
             cell.addSubview(gradientView)
@@ -113,6 +151,5 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             
             transitionContext.completeTransition($0)
         }
-
     }
 }

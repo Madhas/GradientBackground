@@ -31,6 +31,8 @@ final class ColorSettingsCell: UICollectionViewCell {
         addSubview(gradientView!)
         addSubview(titleContainerView)
         
+        gradientView?.clipsToBounds = true
+        
         titleLabel.text = "Edit colors"
         titleLabel.font = .systemFont(ofSize: 17)
         titleContainerView.addSubview(titleLabel)
