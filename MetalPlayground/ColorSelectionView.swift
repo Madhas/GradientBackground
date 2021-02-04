@@ -9,23 +9,38 @@ import UIKit
 
 final class ColorSelectionView: UIView {
     
-    private let textField: UITextField
-    private let colorView: UIView!
+    private let rInput = UITextField()
+    private let gInput = UITextField()
+    private let bInput = UITextField()
+    private let colorButton = UIButton(type: .custom)
+    
+    var isEditing: Bool {
+        rInput.isEditing || gInput.isEditing || bInput.isEditing
+    }
+    
+    init(currentColor: UIColor) {
+        super.init(frame: .zero)
+        
+        setup()
+        
+        if let components = currentColor.cgColor.components {
+            colorButton.backgroundColor = currentColor
+            
+            let r = floor(components[0] * 255)
+            let g = floor(components[1] * 255)
+            let b = floor(components[2] * 255)
+            rInput.text = "\(Int(r))"
+            gInput.text = "\(Int(g))"
+            bInput.text = "\(Int(b))"
+            
+            updateButtonColor(r: Float(r), g: Float(g), b: Float(b))
+        }
+    }
 
     override init(frame: CGRect) {
-        textField = UITextField()
-        colorView = UIView()
-        
         super.init(frame: frame)
         
-        backgroundColor = .white
-        
-        textField.placeholder = "Enter hex color"
-        textField.delegate = self
-        addSubview(textField)
-        
-        colorView.backgroundColor = .black
-        addSubview(colorView)
+        setup()
     }
     
     required init?(coder: NSCoder) {
@@ -36,11 +51,66 @@ final class ColorSelectionView: UIView {
         super.layoutSubviews()
         
         let colorSide = bounds.height - 12 * 2
-        colorView.frame = CGRect(x: bounds.maxX - 12 - colorSide, y: 12, width: colorSide, height: colorSide)
-        colorView.layer.cornerRadius = colorSide / 2
+        colorButton.frame = CGRect(x: bounds.maxX - 12 - colorSide, y: 12, width: colorSide, height: colorSide)
+        colorButton.layer.cornerRadius = colorSide / 2
         
+        let inputInset: CGFloat = 10
+        let interitemInset: CGFloat = 8
         let textHeight: CGFloat = 30
-        textField.frame = CGRect(x: 10, y: bounds.midY - textHeight / 2, width: colorView.frame.minX - 10, height: textHeight)
+        let width = colorButton.frame.minX - inputInset * 2
+        let textWidth = width / 3 - interitemInset * 2
+        let textY = bounds.midY - textHeight / 2
+        
+        rInput.frame = CGRect(x: 10, y: textY, width: textWidth, height: textHeight)
+        gInput.frame = CGRect(x: rInput.frame.maxX + interitemInset, y: textY, width: textWidth, height: textHeight)
+        bInput.frame = CGRect(x: gInput.frame.maxX + interitemInset, y: textY, width: textWidth, height: textHeight)
+    }
+    
+    private func setup() {
+        backgroundColor = .white
+        
+        rInput.placeholder = "R"
+        rInput.textAlignment = .center
+        rInput.delegate = self
+        rInput.keyboardType = .numberPad
+        rInput.addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
+        addSubview(rInput)
+        
+        gInput.placeholder = "G"
+        gInput.textAlignment = .center
+        gInput.delegate = self
+        gInput.keyboardType = .numberPad
+        gInput.addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
+        addSubview(gInput)
+        
+        bInput.placeholder = "B"
+        bInput.textAlignment = .center
+        bInput.delegate = self
+        bInput.keyboardType = .numberPad
+        bInput.addTarget(self, action: #selector(editingChanged(_:)), for: .editingChanged)
+        addSubview(bInput)
+        
+        colorButton.setImage(.colorOk36, for: .normal)
+        addSubview(colorButton)
+    }
+    
+    private func updateButtonColor(r: Float, g: Float, b: Float) {
+        let isWhite = r < 180 && g < 180 && b < 180
+        colorButton.imageView?.tintColor = isWhite ? .white : .black
+    }
+    
+    @objc private func editingChanged(_ textField: UITextField) {
+        guard let red = Float(rInput.text?.count == 0 ? "0" : (rInput.text ?? "0")),
+              let green = Float(gInput.text?.count == 0 ? "0" : (gInput.text ?? "0")),
+              let blue = Float(bInput.text?.count == 0 ? "0" : (bInput.text ?? "0")) else {
+            return
+        }
+        
+        colorButton.backgroundColor = UIColor(red: CGFloat(red / 255),
+                                              green: CGFloat(green / 255),
+                                              blue: CGFloat(blue / 255),
+                                              alpha: 1)
+        updateButtonColor(r: red, g: green, b: blue)
     }
 }
 
@@ -49,19 +119,17 @@ final class ColorSelectionView: UIView {
 extension ColorSelectionView: UITextFieldDelegate {
     
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
-        guard let text = textField.text else {
-            return false
-        }
-        
-        if text.count == 0, range.length == 0 {
-            textField.text = "#" + string
-            return false
-        } else if text.starts(with: "#"), range.length == 1, range.location == 1 {
-            textField.text = ""
+        if range.length == 0, let text = textField.text, let number = Float(text + string), number > 255 {
             return false
         }
         
         return true
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        if let text = textField.text, let number = Float(text), number > 255 {
+            textField.text = nil
+        }
     }
     
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
