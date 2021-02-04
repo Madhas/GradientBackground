@@ -99,6 +99,27 @@ final class GradientView: UIView {
         }
     }
     
+    func handlesAdd(target: Any, action: Selector) {
+        for handle in handles {
+            if let recognizers = handle.gestureRecognizers, let tapRecognizer = recognizers.first(where: { $0 is UITapGestureRecognizer }) {
+                tapRecognizer.addTarget(target, action: action)
+            } else {
+                let recognizer = UITapGestureRecognizer(target: target, action: action)
+                handle.addGestureRecognizer(recognizer)
+            }
+        }
+    }
+    
+    func handlesRemove(target: Any, action: Selector) {
+        for handle in handles {
+            for recognizer in handle.gestureRecognizers ?? [] {
+                if recognizer is UITapGestureRecognizer {
+                    recognizer.removeTarget(target, action: action)
+                }
+            }
+        }
+    }
+    
     // MARK: Setup
     
     private func setupViews() {
