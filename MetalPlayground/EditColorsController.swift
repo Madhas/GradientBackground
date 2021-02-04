@@ -70,6 +70,9 @@ final class EditColorsController: UIViewController {
         bottomPanel.backgroundColor = .white
         view.addSubview(bottomPanel)
         self.bottomPanel = bottomPanel
+        
+        let recognizer = UITapGestureRecognizer(target: self, action: #selector(viewTapped))
+        view.addGestureRecognizer(recognizer)
     }
     
     override func viewDidLayoutSubviews() {
@@ -106,6 +109,21 @@ final class EditColorsController: UIViewController {
     
     // MARK: Actions
     
+    @objc private func viewTapped() {
+        guard let view = colorSelectionView else { return }
+    
+        if view.isEditing {
+            view.endEditing(false)
+        } else {
+            let bottomHeight = bottomPanel?.bounds.height ?? 0
+            UIView.animate(withDuration: CATransaction.animationDuration()) {
+                view.frame.origin.y = self.view.bounds.height - bottomHeight
+            } completion: { _ in
+                view.removeFromSuperview()
+            }
+        }
+    }
+    
     @objc private func closeTapped() {
         if let colorSelection = colorSelectionView {
             let bottomHeight = bottomPanel?.bounds.height ?? 0
@@ -128,7 +146,8 @@ final class EditColorsController: UIViewController {
         }
         
         let rect = CGRect(x: 0, y: view.bounds.height - bottomHeight, width: view.bounds.width, height: colorSelectionHeight)
-        let colorSelector = ColorSelectionView(frame: rect)
+        let colorSelector = ColorSelectionView(currentColor: handle.backgroundColor ?? .black)
+        colorSelector.frame = rect
         view.addSubview(colorSelector)
         
         colorSelectionView = colorSelector
