@@ -18,6 +18,10 @@ final class ColorSelectionView: UIView {
         rInput.isEditing || gInput.isEditing || bInput.isEditing
     }
     
+    var selectedColor: UIColor {
+        colorButton.backgroundColor ?? .black
+    }
+    
     init(currentColor: UIColor) {
         super.init(frame: .zero)
         
@@ -66,6 +70,12 @@ final class ColorSelectionView: UIView {
         bInput.frame = CGRect(x: gInput.frame.maxX + interitemInset, y: textY, width: textWidth, height: textHeight)
     }
     
+    func addAccept(target: Any, action: Selector) {
+        colorButton.addTarget(target, action: action, for: .touchUpInside)
+    }
+    
+    // MARK: Private
+    
     private func setup() {
         backgroundColor = .white
         
@@ -95,8 +105,8 @@ final class ColorSelectionView: UIView {
     }
     
     private func updateButtonColor(r: Float, g: Float, b: Float) {
-        let isWhite = r < 180 && g < 180 && b < 180
-        colorButton.imageView?.tintColor = isWhite ? .white : .black
+        let relativeLuminance = 0.2126 * r + 0.7152 * g + 0.0722 * b
+        colorButton.imageView?.tintColor = relativeLuminance < 128 ? .white : .black
     }
     
     @objc private func editingChanged(_ textField: UITextField) {
