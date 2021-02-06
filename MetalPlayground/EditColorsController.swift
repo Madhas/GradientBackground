@@ -29,6 +29,7 @@ final class EditColorsController: UIViewController {
     var bottomPanel: EditColorsBottomView?
     
     weak private var colorSelectionView: ColorSelectionView?
+    weak private var handleEdited: GradientHandleView?
     
     private var closeButton: UIButton!
     
@@ -107,6 +108,25 @@ final class EditColorsController: UIViewController {
         }
     }
     
+    // MARK: Private
+    
+    private func hideColorSelection(forced: Bool = false, dismissOnCompletion: Bool = false) {
+        guard let colorSelection = colorSelectionView else { return }
+        
+        let duration = forced ? 0.1 : CATransaction.animationDuration()
+        
+        let bottomHeight = bottomPanel?.bounds.height ?? 0
+        UIView.animate(withDuration: duration) {
+            colorSelection.frame.origin.y = self.view.bounds.height - bottomHeight
+        } completion: { _ in
+            colorSelection.removeFromSuperview()
+            self.handleEdited = nil
+            if dismissOnCompletion {
+                self.dismiss(animated: true, completion: nil)
+            }
+        }
+    }
+    
     // MARK: Actions
     
     @objc private func viewTapped() {
@@ -115,24 +135,13 @@ final class EditColorsController: UIViewController {
         if view.isEditing {
             view.endEditing(false)
         } else {
-            let bottomHeight = bottomPanel?.bounds.height ?? 0
-            UIView.animate(withDuration: CATransaction.animationDuration()) {
-                view.frame.origin.y = self.view.bounds.height - bottomHeight
-            } completion: { _ in
-                view.removeFromSuperview()
-            }
+            hideColorSelection()
         }
     }
     
     @objc private func closeTapped() {
-        if let colorSelection = colorSelectionView {
-            let bottomHeight = bottomPanel?.bounds.height ?? 0
-            UIView.animate(withDuration: 0.1) {
-                colorSelection.frame.origin.y = self.view.bounds.height - bottomHeight
-            } completion: { _ in
-                colorSelection.removeFromSuperview()
-                self.dismiss(animated: true, completion: nil)
-            }
+        if colorSelectionView != nil {
+            hideColorSelection(forced: true, dismissOnCompletion: true)
         } else {
             dismiss(animated: true, completion: nil)
         }
@@ -148,8 +157,10 @@ final class EditColorsController: UIViewController {
         let rect = CGRect(x: 0, y: view.bounds.height - bottomHeight, width: view.bounds.width, height: colorSelectionHeight)
         let colorSelector = ColorSelectionView(currentColor: handle.backgroundColor ?? .black)
         colorSelector.frame = rect
+        colorSelector.addAccept(target: self, action: #selector(acceptColor))
         view.addSubview(colorSelector)
         
+        handleEdited = handle
         colorSelectionView = colorSelector
         bottomPanel?.layer.zPosition = 1
         
@@ -183,5 +194,12 @@ final class EditColorsController: UIViewController {
         UIView.animate(withDuration: duration) {
             colorSelection.frame.origin.y += difference
         }
+    }
+    
+    @objc private func acceptColor() {
+        guard let colorView = colorSelectionView else { return }
+        
+        handleEdited?.backgroundColor = colorView.selectedColor
+        hideColorSelection()
     }
 }
