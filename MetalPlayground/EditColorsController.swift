@@ -12,15 +12,28 @@ final class EditColorsController: UIViewController {
     let topHeight: CGFloat = 48
     let bottomHeight: CGFloat = 48
     private let colorSelectionHeight: CGFloat = 80
+    private let handleSize = CGSize(width: 48, height: 48)
     
     var shouldLoadGradientView = true
     
     var gradientView: GradientView? {
         didSet {
-            if let gradientView = gradientView {
-                gradientView.handlesAdd(target: self, action: #selector(handleTapped(_:)))
+            if let gradientView = gradientView, handles.isEmpty {
+                handles = Settings.shared.selectedColors.map { color in
+                    let tap = UITapGestureRecognizer(target: self, action: #selector(handleTapped(_:)))
+                    let handle = UIView()
+                    handle.backgroundColor = color
+                    handle.layer.borderWidth = 5
+                    handle.layer.borderColor = UIColor.white.cgColor
+                    handle.addGestureRecognizer(tap)
+                    gradientView.addSubview(handle)
+                    return handle
+                }
             } else {
-                gradientView?.handlesRemove(target: self, action: #selector(handleTapped(_:)))
+                for handle in handles {
+                    handle.removeFromSuperview()
+                }
+                handles = []
             }
         }
     }
@@ -28,10 +41,11 @@ final class EditColorsController: UIViewController {
     var topPanel: TopHeaderView?
     var bottomPanel: EditColorsBottomView?
     
-    weak private var colorSelectionView: ColorSelectionView?
-    weak private var handleEdited: GradientHandleView?
-    
     private var closeButton: UIButton!
+    private var handles: [UIView] = []
+    
+    weak private var colorSelectionView: ColorSelectionView?
+    weak private var handleEdited: UIView?
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -105,6 +119,14 @@ final class EditColorsController: UIViewController {
                                          y: topHeight,
                                          width: view.bounds.width,
                                          height: view.bounds.height - bottomHeight - topHeight)
+            
+            gradientView.controlPoints.enumerated().forEach { idx, point in
+                let transformed = CGPoint(x: point.x * gradientView.bounds.width, y: point.y * gradientView.bounds.height)
+                let handle = self.handles[idx]
+                handle.center = transformed
+                handle.bounds.size = self.handleSize
+                handle.layer.cornerRadius = self.handleSize.height / 2
+            }
         }
     }
     
@@ -149,7 +171,7 @@ final class EditColorsController: UIViewController {
     
     @objc private func handleTapped(_ recognizer: UITapGestureRecognizer) {
         guard colorSelectionView == nil,
-              let handle = recognizer.view as? GradientHandleView,
+              let handle = recognizer.view,
               let bottomHeight = bottomPanel?.bounds.height else {
             return
         }

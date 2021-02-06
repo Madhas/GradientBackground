@@ -21,7 +21,6 @@ final class GradientView: UIView {
     }
     
     private let config: GradientViewConfig
-    private var handles: [GradientHandleView] = []
     
     // Metal
     private var device: MTLDevice!
@@ -31,6 +30,11 @@ final class GradientView: UIView {
     private var library: MTLLibrary!
     private var blurShader: MPSImageGaussianBlur!
 
+    private var currentControlPoints: [SIMD2<Float>]
+    var controlPoints: [CGPoint] {
+        currentControlPoints.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
+    }
+    
     private let vertices: [SIMD4<Float>] = [
         SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
         SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1), SIMD4(1, -1, 0, 1)
@@ -38,14 +42,12 @@ final class GradientView: UIView {
     
     // Animations
     private var animation: GradientViewAnimation?
-    private var currentControlPoints: [SIMD2<Float>]
     
     init(config: GradientViewConfig) {
         self.config = config
         currentControlPoints = config.controlPoints
         super.init(frame: .zero)
         
-        setupViews()
         setupMetal()
     }
     
@@ -62,14 +64,6 @@ final class GradientView: UIView {
         super.layoutSubviews()
         
         metalLayer.drawableSize = bounds.size
-        
-        handles.enumerated().forEach { idx, handle in
-            handle.center = CGPoint(x: CGFloat(config.controlPoints[idx].x) * bounds.width,
-                                    y: CGFloat(config.controlPoints[idx].y) * bounds.height)
-            let size = handle.isHidden ? CGSize.zero : CGSize(width: 42, height: 42)
-            handle.bounds.size = size
-        }
-        
         render()
     }
     
@@ -93,48 +87,7 @@ final class GradientView: UIView {
         timer.add(to: .main, forMode: .default)
     }
     
-    func setHandles(hidden: Bool) {
-        for handle in handles {
-            handle.isHidden = hidden
-        }
-    }
-    
-    func handlesAdd(target: Any, action: Selector) {
-        for handle in handles {
-            if let recognizers = handle.gestureRecognizers, let tapRecognizer = recognizers.first(where: { $0 is UITapGestureRecognizer }) {
-                tapRecognizer.addTarget(target, action: action)
-            } else {
-                let recognizer = UITapGestureRecognizer(target: target, action: action)
-                handle.addGestureRecognizer(recognizer)
-            }
-        }
-    }
-    
-    func handlesRemove(target: Any, action: Selector) {
-        for handle in handles {
-            for recognizer in handle.gestureRecognizers ?? [] {
-                if recognizer is UITapGestureRecognizer {
-                    recognizer.removeTarget(target, action: action)
-                }
-            }
-        }
-    }
-    
     // MARK: Setup
-    
-    private func setupViews() {
-        for idx in 0 ..< config.controlPoints.count {
-            let view = GradientHandleView()
-            let color = config.colors[idx]
-            view.backgroundColor = UIColor(red: CGFloat(color[0]),
-                                           green: CGFloat(color[1]),
-                                           blue: CGFloat(color[2]),
-                                           alpha: CGFloat(color[3]))
-            view.isHidden = true
-            addSubview(view)
-            handles.append(view)
-        }
-    }
     
     private func setupMetal() {
         device = MTLCreateSystemDefaultDevice()!

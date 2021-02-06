@@ -53,7 +53,6 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         
         let fromFrame = containerView.convert(gradientView.frame, from: gradientView.superview)
         gradientView.removeFromSuperview()
-        gradientView.setHandles(hidden: false)
         gradientView.frame = fromFrame
         containerView.addSubview(gradientView)
         cell.gradientView = nil
@@ -117,8 +116,6 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         fromController.topPanel = nil
         fromController.gradientView = nil
         fromController.bottomPanel = nil
-        
-        gradientView.setHandles(hidden: true)
         
         let previousTransform = toController.view.transform
         toController.view.transform = .identity

@@ -24,7 +24,6 @@
 		EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E0A25C1BB840020DE02 /* Settings.swift */; };
 		EAA99E2925C1CD7D0020DE02 /* TimingCurveSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E2825C1CD7D0020DE02 /* TimingCurveSettingsCell.swift */; };
 		EAA99E3125C1DEA00020DE02 /* EditColorsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E3025C1DEA00020DE02 /* EditColorsController.swift */; };
-		EAA99E3425C1E2610020DE02 /* GradientHandleView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E3325C1E2610020DE02 /* GradientHandleView.swift */; };
 		EABE3D7925C5A01800D359DE /* EditColorsAnimator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */; };
 		EABE3D7C25C5E88200D359DE /* EditColorsBottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */; };
 		EABE3D8025C5EBBA00D359DE /* TopHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */; };
@@ -52,7 +51,6 @@
 		EAA99E0A25C1BB840020DE02 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
 		EAA99E2825C1CD7D0020DE02 /* TimingCurveSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingCurveSettingsCell.swift; sourceTree = "<group>"; };
 		EAA99E3025C1DEA00020DE02 /* EditColorsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsController.swift; sourceTree = "<group>"; };
-		EAA99E3325C1E2610020DE02 /* GradientHandleView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientHandleView.swift; sourceTree = "<group>"; };
 		EABE3D7825C5A01800D359DE /* EditColorsAnimator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsAnimator.swift; sourceTree = "<group>"; };
 		EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditColorsBottomView.swift; sourceTree = "<group>"; };
 		EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopHeaderView.swift; sourceTree = "<group>"; };
@@ -89,7 +87,6 @@
 				EA2C26B325B450A000135808 /* GradientView.swift */,
 				EA2C26B625B45D9600135808 /* Shaders.metal */,
 				EA2C283125B7841800135808 /* GradientViewConfig.swift */,
-				EAA99E3325C1E2610020DE02 /* GradientHandleView.swift */,
 			);
 			name = Gradient;
 			sourceTree = "<group>";
@@ -246,7 +243,6 @@
 				EA206A2B25C095BB0083FC89 /* UIImage+Convenience.swift in Sources */,
 				EA2C269E25B4504800135808 /* ViewController.swift in Sources */,
 				EAA99E0025C1B3910020DE02 /* SettingsController.swift in Sources */,
-				EAA99E3425C1E2610020DE02 /* GradientHandleView.swift in Sources */,
 				EAA99E0625C1B6F80020DE02 /* ColorSettingsCell.swift in Sources */,
 				EAA5664825CB47E300FCFBF8 /* ColorSelectionView.swift in Sources */,
 				EABE3D7C25C5E88200D359DE /* EditColorsBottomView.swift in Sources */,
