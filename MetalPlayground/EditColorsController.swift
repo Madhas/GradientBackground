@@ -44,6 +44,12 @@ final class EditColorsController: UIViewController {
     private var closeButton: UIButton!
     private var handles: [UIView] = []
     
+    private var pendingChanges = false {
+        didSet {
+            bottomPanel?.applyButton.isEnabled = pendingChanges
+        }
+    }
+    
     weak private var colorSelectionView: ColorSelectionView?
     weak private var handleEdited: UIView?
     
@@ -83,6 +89,9 @@ final class EditColorsController: UIViewController {
         let bottomPanel = EditColorsBottomView()
         bottomPanel.clipsToBounds = true
         bottomPanel.backgroundColor = .white
+        bottomPanel.applyButton.addTarget(self, action: #selector(applyChanges), for: .touchUpInside)
+        bottomPanel.applyButton.isEnabled = false
+        bottomPanel.defaultsButton.addTarget(self, action: #selector(setDefaults), for: .touchUpInside)
         view.addSubview(bottomPanel)
         self.bottomPanel = bottomPanel
         
@@ -223,5 +232,51 @@ final class EditColorsController: UIViewController {
         
         handleEdited?.backgroundColor = colorView.selectedColor
         hideColorSelection()
+        
+        var pendingChanges = false
+        for (idx, handle) in handles.enumerated() {
+            if let color = handle.backgroundColor {
+                pendingChanges = pendingChanges || !color.isEqual(toColor: Settings.shared.defaultColors[idx]) 
+            }
+        }
+        self.pendingChanges = pendingChanges
+    }
+    
+    @objc private func applyChanges() {
+        
+    }
+    
+    @objc private func setDefaults() {
+        hideColorSelection()
+        
+        var pendingChanges = false
+        handles.enumerated().forEach { idx, handle in
+            pendingChanges = pendingChanges || !Settings.shared.selectedColors[idx].isEqual(toColor: Settings.shared.defaultColors[idx])
+            handle.backgroundColor = Settings.shared.defaultColors[idx]
+        }
+        
+        self.pendingChanges = pendingChanges
+    }
+}
+
+// MARK: Color comparison
+
+extension UIColor {
+
+    func isEqual(toColor color: UIColor) -> Bool {
+        var lRed: CGFloat = 0
+        var lGreen: CGFloat = 0
+        var lBlue: CGFloat = 0
+        
+        var rRed: CGFloat = 0
+        var rGreen: CGFloat = 0
+        var rBlue: CGFloat = 0
+        
+        guard getRed(&lRed, green: &lGreen, blue: &lBlue, alpha: nil),
+              color.getRed(&rRed, green: &rGreen, blue: &rBlue, alpha: nil) else {
+            return false
+        }
+        
+        return floor(lRed * 255) == floor(rRed * 255) && floor(lGreen * 255) == floor(rGreen * 255) && floor(lBlue * 255) == floor(rBlue * 255)
     }
 }
