@@ -23,11 +23,13 @@ final class EditColorsBottomView: UIView {
         applyButton.setTitle("Apply", for: .normal)
         applyButton.titleLabel?.font = .systemFont(ofSize: 17)
         applyButton.setTitleColor(.mainColor, for: .normal)
+        applyButton.setTitleColor(UIColor.mainColor.withAlphaComponent(0.6), for: .disabled)
         addSubview(applyButton)
         
         defaultsButton.setTitle("Defaults", for: .normal)
         defaultsButton.titleLabel?.font = .systemFont(ofSize: 17)
         defaultsButton.setTitleColor(.mainColor, for: .normal)
+        defaultsButton.setTitleColor(UIColor.mainColor.withAlphaComponent(0.6), for: .disabled)
         addSubview(defaultsButton)
     }
     
