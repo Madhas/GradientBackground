@@ -7,7 +7,17 @@
 
 import UIKit
 
+protocol TimingCurveControllerDelegate: AnyObject {
+
+    func timingCurveController(_ controller: TimingCurveController, didChangeTimingFunctionName name: String)
+}
+
 final class TimingCurveController: UIViewController {
+    
+    weak var delegate: TimingCurveControllerDelegate?
+    
+    private var selectedName: String?
+    private var selectedCurve: CAMediaTimingFunction?
     
     private var collectionView: UICollectionView!
 
@@ -35,6 +45,10 @@ final class TimingCurveController: UIViewController {
     // MARK: Actions
     
     @objc private func close() {
+        if let name = selectedName, let curve = selectedCurve {
+            Settings.shared.set(timingFunction: curve, name: name)
+            delegate?.timingCurveController(self, didChangeTimingFunctionName: name)
+        }
         dismiss(animated: true, completion: nil)
     }
 }
@@ -78,6 +92,7 @@ extension TimingCurveController: UICollectionViewDelegateFlowLayout {
 extension TimingCurveController: TimingCurveSelectionCellDelegate {
     
     func timingCurveSelectionCell(_ cell: TimingCurveSelectionCell, didSelectTitle title: String, value: CAMediaTimingFunction?) {
-        
+        selectedName = title
+        selectedCurve = value
     }
 }
