@@ -35,7 +35,7 @@ final class GradientView: UIView {
         currentControlPoints.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
     }
     
-    private var colors:  [SIMD4<Float>]
+    private var colors: [SIMD4<Float>]
     
     private let vertices: [SIMD4<Float>] = [
         SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
@@ -89,6 +89,28 @@ final class GradientView: UIView {
                                                toValue: nextPoints,
                                                displayLink: timer)
         currentControlPoints = nextPoints
+        
+        timer.add(to: .main, forMode: .default)
+    }
+    
+    func animateColors(_ colors: [UIColor], duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+        guard colorsAnimation == nil else { return }
+        
+        let nextColors = colors.compactMap { color -> SIMD4<Float>? in
+            guard let components = color.cgColor.components, components.count == 4 else {
+                return nil
+            }
+            return SIMD4<Float>(Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3]))
+        }
+        let timer = CADisplayLink(target: self, selector: #selector(tick))
+        
+        colorsAnimation = GradientColorsAnimation(startTime: CACurrentMediaTime(),
+                                                  duration: duration,
+                                                  timingFunction: timingFunction,
+                                                  fromValue: self.colors,
+                                                  toValue: nextColors,
+                                                  displayLink: timer)
+        self.colors = nextColors
         
         timer.add(to: .main, forMode: .default)
     }
@@ -155,6 +177,16 @@ final class GradientView: UIView {
             controlPoints = currentControlPoints.map {
                 SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
             }
+        }
+        
+        let colors: [SIMD4<Float>]
+        if let animation = colorsAnimation {
+            colors = animation.nextBuffer()
+            if animation.finished {
+                colorsAnimation = nil
+            }
+        } else {
+            colors = self.colors
         }
         
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!

@@ -242,7 +242,12 @@ final class EditColorsController: UIViewController {
     }
     
     @objc private func applyChanges() {
+        bottomPanel?.applyButton.isEnabled = false
+        Settings.shared.set(colors: handles.map(\.backgroundColor!))
         
+        gradientView?.animateColors(Settings.shared.selectedColors,
+                                    duration: 0.3,
+                                    timingFunction: CAMediaTimingFunction(name: .linear))
     }
     
     @objc private func setDefaults() {
