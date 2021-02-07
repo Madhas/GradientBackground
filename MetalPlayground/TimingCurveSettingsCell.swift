@@ -54,4 +54,9 @@ final class TimingCurveSettingsCell: UICollectionViewCell {
         let titleWidth = valueLabel.frame.minX - 14
         titleLabel.frame = CGRect(x: 14, y: 0, width: titleWidth, height: bounds.height)
     }
+    
+    func update(value: String) {
+        valueLabel.text = value
+        setNeedsLayout()
+    }
 }
