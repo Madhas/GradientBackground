@@ -246,8 +246,8 @@ final class EditColorsController: UIViewController {
         Settings.shared.set(colors: handles.map(\.backgroundColor!))
         
         gradientView?.animateColors(Settings.shared.selectedColors,
-                                    duration: 0.3,
-                                    timingFunction: CAMediaTimingFunction(name: .linear))
+                                    duration: 0.37,
+                                    timingFunction: CAMediaTimingFunction(name: .easeOut))
     }
     
     @objc private func setDefaults() {
