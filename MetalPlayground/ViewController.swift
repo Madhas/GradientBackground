@@ -46,8 +46,17 @@ final class ViewController: UIViewController {
     
     @objc private func showSettings() {
         let settings = SettingsController()
+        settings.delegate = self
         let navigation = UINavigationController(rootViewController: settings)
         present(navigation, animated: true, completion: nil)
     }
 }
 
+// MARK: SettingsControllerDelegate
+
+extension ViewController: SettingsControllerDelegate {
+    
+    func settingsController(_ controller: SettingsController, didChangeColors colors: [UIColor]) {
+        gradientView.set(colors: colors)
+    }
+}

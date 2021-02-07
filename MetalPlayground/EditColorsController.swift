@@ -7,12 +7,19 @@
 
 import UIKit
 
+protocol EditColorsControllerDelegate: AnyObject {
+    
+    func editColorsController(_ controller: EditColorsController, didChangeColors colors: [UIColor])
+}
+
 final class EditColorsController: UIViewController {
     
     let topHeight: CGFloat = 48
     let bottomHeight: CGFloat = 48
     private let colorSelectionHeight: CGFloat = 80
     private let handleSize = CGSize(width: 48, height: 48)
+    
+    weak var delegate: EditColorsControllerDelegate?
     
     var shouldLoadGradientView = true
     
@@ -248,6 +255,8 @@ final class EditColorsController: UIViewController {
         gradientView?.animateColors(Settings.shared.selectedColors,
                                     duration: 0.37,
                                     timingFunction: CAMediaTimingFunction(name: .easeOut))
+        
+        delegate?.editColorsController(self, didChangeColors: Settings.shared.selectedColors)
     }
     
     @objc private func setDefaults() {

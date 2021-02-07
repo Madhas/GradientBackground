@@ -115,6 +115,17 @@ final class GradientView: UIView {
         timer.add(to: .main, forMode: .default)
     }
     
+    func set(colors: [UIColor]) {
+        let newColors = colors.compactMap { color -> SIMD4<Float>? in
+            guard let components = color.cgColor.components, components.count == 4 else {
+                return nil
+            }
+            return SIMD4<Float>(Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3]))
+        }
+        self.colors = newColors
+        render()
+    }
+    
     // MARK: Setup
     
     private func setupMetal() {

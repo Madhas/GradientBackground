@@ -7,7 +7,14 @@
 
 import UIKit
 
-class SettingsController: UIViewController {
+protocol SettingsControllerDelegate: AnyObject {
+
+    func settingsController(_ controller: SettingsController, didChangeColors colors: [UIColor])
+}
+
+final class SettingsController: UIViewController {
+    
+    weak var delegate: SettingsControllerDelegate?
     
     private var collectionView: UICollectionView!
     
@@ -91,6 +98,7 @@ extension SettingsController: UICollectionViewDelegateFlowLayout {
             let controller = EditColorsController()
             controller.modalPresentationStyle = .custom
             controller.transitioningDelegate = self
+            controller.delegate = self
             controller.shouldLoadGradientView = false
             present(controller, animated: true, completion: nil)
         case 1:
@@ -124,5 +132,14 @@ extension SettingsController: UIViewControllerTransitioningDelegate {
         }
         
         return EditColorsAnimator(transition: .dismiss(cell))
+    }
+}
+
+// MARK: EditColorsControllerDelegate
+
+extension SettingsController: EditColorsControllerDelegate {
+    
+    func editColorsController(_ controller: EditColorsController, didChangeColors colors: [UIColor]) {
+        delegate?.settingsController(self, didChangeColors: colors)
     }
 }
