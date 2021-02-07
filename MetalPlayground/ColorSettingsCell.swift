@@ -18,8 +18,7 @@ final class ColorSettingsCell: UICollectionViewCell {
     private let separatorView: UIView
     
     override init(frame: CGRect) {
-        let config = GradientViewConfig(colors: Settings.shared.selectedColors)
-        gradientView = GradientView(config: config)
+        gradientView = GradientView(colors: Settings.shared.selectedColors)
         titleContainerView = UIView()
         titleLabel = UILabel()
         separatorView = UIView()

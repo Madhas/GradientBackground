@@ -20,7 +20,7 @@ final class GradientView: UIView {
         layer as! CAMetalLayer
     }
     
-    private let config: GradientViewConfig
+    private let positions = GradientPositions()
     
     // Metal
     private var device: MTLDevice!
@@ -35,6 +35,8 @@ final class GradientView: UIView {
         currentControlPoints.map { CGPoint(x: CGFloat($0.x), y: CGFloat($0.y)) }
     }
     
+    private var colors:  [SIMD4<Float>]
+    
     private let vertices: [SIMD4<Float>] = [
         SIMD4(-1, 1, 0, 1), SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1),
         SIMD4(1, 1, 0, 1), SIMD4(-1, -1, 0, 1), SIMD4(1, -1, 0, 1)
@@ -43,9 +45,14 @@ final class GradientView: UIView {
     // Animations
     private var animation: GradientViewAnimation?
     
-    init(config: GradientViewConfig) {
-        self.config = config
-        currentControlPoints = config.controlPoints
+    init(colors: [UIColor]) {
+        currentControlPoints = positions.controlPoints
+        self.colors = colors.compactMap { color -> SIMD4<Float>? in
+            guard let components = color.cgColor.components, components.count == 4 else {
+                return nil
+            }
+            return SIMD4<Float>(Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3]))
+        }
         super.init(frame: .zero)
         
         setupMetal()
@@ -75,7 +82,7 @@ final class GradientView: UIView {
         }
         
         let timer = CADisplayLink(target: self, selector: #selector(tick))
-        let nextPoints = config.nextControlPoints
+        let nextPoints = positions.nextControlPoints
         animation = GradientViewAnimation(startTime: CACurrentMediaTime(),
                                                duration: duration,
                                                timingFunction: timingFunction,
@@ -154,7 +161,7 @@ final class GradientView: UIView {
         let encoder = commandBuffer.makeRenderCommandEncoder(descriptor: renderPassDescriptor)!
         encoder.setRenderPipelineState(renderPipelineState)
         encoder.setVertexBytes(vertices, length: MemoryLayout.size(ofValue: vertices[0]) * vertices.count, index: 0)
-        encoder.setFragmentBytes(config.colors, length: MemoryLayout.size(ofValue: config.colors[0]) * config.colors.count, index: 0)
+        encoder.setFragmentBytes(colors, length: MemoryLayout.size(ofValue: colors[0]) * colors.count, index: 0)
         encoder.setFragmentBytes(controlPoints,
                                  length: MemoryLayout.size(ofValue: controlPoints[0]) * controlPoints.count,
                                  index: 1)

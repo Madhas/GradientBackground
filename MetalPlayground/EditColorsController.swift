@@ -72,8 +72,7 @@ final class EditColorsController: UIViewController {
         super.viewDidLoad()
         
         if shouldLoadGradientView {
-            let config = GradientViewConfig(colors: Settings.shared.selectedColors)
-            let gradientView = GradientView(config: config)
+            let gradientView = GradientView(colors: Settings.shared.selectedColors)
             view.addSubview(gradientView)
             self.gradientView = gradientView
         }

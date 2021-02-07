@@ -16,9 +16,7 @@ final class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        let config = GradientViewConfig(colors: Settings.shared.selectedColors)
-        gradientView = GradientView(config: config)
+        gradientView = GradientView(colors: Settings.shared.selectedColors)
         view.addSubview(gradientView)
         
         bottomPanel = MainBottomPanelView(frame: .zero)

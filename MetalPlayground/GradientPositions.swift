@@ -8,9 +8,8 @@
 import UIKit
 import simd
 
-final class GradientViewConfig {
+final class GradientPositions {
     
-    let colors: [SIMD4<Float>]
     let controlPoints: [SIMD2<Float>] = [
         SIMD2(0.361, 0.249),
         SIMD2(0.185, 0.92),
@@ -28,21 +27,6 @@ final class GradientViewConfig {
     // Transforms
     private var currentStep: Int = 0
     private let stepsCount: Int = 8
-    
-    init(colors: [SIMD4<Float>]) {
-        self.colors = colors    }
-    
-    convenience init(colors: [UIColor]) {
-        let components = colors.compactMap { color -> SIMD4<Float>? in
-            guard let components = color.cgColor.components, components.count == 4 else {
-                return nil
-            }
-            return SIMD4<Float>(Float(components[0]), Float(components[1]), Float(components[2]), Float(components[3]))
-        }
-        
-        assert(components.count == 4)
-        self.init(colors: components)
-    }
     
     var nextControlPoints: [SIMD2<Float>] {
         defer { currentStep = (currentStep + 1) % stepsCount }
