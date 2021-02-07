@@ -30,6 +30,9 @@ final class TimingCurveSelectionCell: UICollectionViewCell {
         
         super.init(frame: frame)
         
+        picker.dataSource = self
+        picker.delegate = self
+        addSubview(picker)
     }
     
     required init?(coder: NSCoder) {
