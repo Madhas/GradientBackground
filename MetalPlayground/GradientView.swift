@@ -43,7 +43,8 @@ final class GradientView: UIView {
     ]
     
     // Animations
-    private var animation: GradientPositionsAnimation?
+    private var positionsAnimation: GradientPositionsAnimation?
+    private var colorsAnimation: GradientColorsAnimation?
     
     init(colors: [UIColor]) {
         currentControlPoints = positions.controlPoints
@@ -76,18 +77,16 @@ final class GradientView: UIView {
     
     // MARK: Public
     
-    func animate(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
-        guard animation == nil else {
-            return
-        }
+    func animatePositions(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+        guard positionsAnimation == nil else { return }
         
         let timer = CADisplayLink(target: self, selector: #selector(tick))
         let nextPoints = positions.nextControlPoints
-        animation = GradientPositionsAnimation(startTime: CACurrentMediaTime(),
+        positionsAnimation = GradientPositionsAnimation(startTime: CACurrentMediaTime(),
                                                duration: duration,
                                                timingFunction: timingFunction,
-                                               startPoints: currentControlPoints,
-                                               targetPoints: nextPoints,
+                                               fromValue: currentControlPoints,
+                                               toValue: nextPoints,
                                                displayLink: timer)
         currentControlPoints = nextPoints
         
@@ -128,7 +127,7 @@ final class GradientView: UIView {
     }
     
     private func render() {
-        let semaphore = DispatchSemaphore(value: GradientPositionsAnimation.buffersCount)
+        let semaphore = DispatchSemaphore(value: GradientAnimationConstants.buffersCount)
         semaphore.wait()
         guard let drawable = metalLayer.nextDrawable() else {
             semaphore.signal()
@@ -144,13 +143,13 @@ final class GradientView: UIView {
         renderPassDescriptor.colorAttachments[0].storeAction = .store
         renderPassDescriptor.colorAttachments[0].clearColor = clearWhite
         
-        var controlPoints: [SIMD2<Float>]
-        if let animation = animation {
+        let controlPoints: [SIMD2<Float>]
+        if let animation = positionsAnimation {
             controlPoints = animation.nextBuffer().map {
                 SIMD2($0.x * Float(drawable.texture.width), $0.y * Float(drawable.texture.height))
             }
             if animation.finished {
-                self.animation = nil
+                self.positionsAnimation = nil
             }
         } else {
             controlPoints = currentControlPoints.map {
