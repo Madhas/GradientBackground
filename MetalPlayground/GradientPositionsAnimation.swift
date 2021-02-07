@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class GradientViewAnimation {
+final class GradientPositionsAnimation {
     static let buffersCount = 3
     
     private(set) var finished = false
@@ -20,7 +20,7 @@ final class GradientViewAnimation {
     private let displayLink: CADisplayLink
     
     var currentBuffer = 0
-    private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: GradientViewAnimation.buffersCount)
+    private var animationBuffers: [[SIMD2<Float>]] = Array(repeating: [], count: GradientPositionsAnimation.buffersCount)
     
     init(startTime: TimeInterval,
          duration: TimeInterval,
@@ -37,7 +37,7 @@ final class GradientViewAnimation {
     }
     
     func nextBuffer() -> [SIMD2<Float>] {
-        defer { currentBuffer = (currentBuffer + 1) % GradientViewAnimation.buffersCount }
+        defer { currentBuffer = (currentBuffer + 1) % GradientPositionsAnimation.buffersCount }
         
         let t = (CACurrentMediaTime() - startTime) / duration
         if t > 1 {

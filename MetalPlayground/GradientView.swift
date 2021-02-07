@@ -43,7 +43,7 @@ final class GradientView: UIView {
     ]
     
     // Animations
-    private var animation: GradientViewAnimation?
+    private var animation: GradientPositionsAnimation?
     
     init(colors: [UIColor]) {
         currentControlPoints = positions.controlPoints
@@ -83,7 +83,7 @@ final class GradientView: UIView {
         
         let timer = CADisplayLink(target: self, selector: #selector(tick))
         let nextPoints = positions.nextControlPoints
-        animation = GradientViewAnimation(startTime: CACurrentMediaTime(),
+        animation = GradientPositionsAnimation(startTime: CACurrentMediaTime(),
                                                duration: duration,
                                                timingFunction: timingFunction,
                                                startPoints: currentControlPoints,
@@ -128,7 +128,7 @@ final class GradientView: UIView {
     }
     
     private func render() {
-        let semaphore = DispatchSemaphore(value: GradientViewAnimation.buffersCount)
+        let semaphore = DispatchSemaphore(value: GradientPositionsAnimation.buffersCount)
         semaphore.wait()
         guard let drawable = metalLayer.nextDrawable() else {
             semaphore.signal()
