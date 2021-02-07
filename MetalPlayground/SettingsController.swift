@@ -102,7 +102,10 @@ extension SettingsController: UICollectionViewDelegateFlowLayout {
             controller.shouldLoadGradientView = false
             present(controller, animated: true, completion: nil)
         case 1:
-            break
+            let controller = TimingCurveController()
+            controller.delegate = self
+            let navigation = UINavigationController(rootViewController: controller)
+            present(navigation, animated: true, completion: nil)
         default:
             fatalError("Unexpected number of cells")
         }
@@ -141,5 +144,18 @@ extension SettingsController: EditColorsControllerDelegate {
     
     func editColorsController(_ controller: EditColorsController, didChangeColors colors: [UIColor]) {
         delegate?.settingsController(self, didChangeColors: colors)
+    }
+}
+
+// MARK: TimingCurveControllerDelegate
+
+extension SettingsController: TimingCurveControllerDelegate {
+    
+    func timingCurveController(_ controller: TimingCurveController, didChangeTimingFunctionName name: String) {
+        guard let cell = collectionView.cellForItem(at: IndexPath(item: 1, section: 0)) as? TimingCurveSettingsCell else {
+            return
+        }
+        
+        cell.update(value: name)
     }
 }
