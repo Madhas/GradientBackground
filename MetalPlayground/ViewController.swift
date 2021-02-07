@@ -41,7 +41,7 @@ final class ViewController: UIViewController {
 
     @objc private func animateGradient() {
         let timing = CAMediaTimingFunction(name: .easeOut)
-        gradientView.animate(with: 0.45, timingFunction: timing)
+        gradientView.animatePositions(with: 0.45, timingFunction: timing)
     }
     
     @objc private func showSettings() {
