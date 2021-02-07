@@ -32,6 +32,9 @@ final class TimingCurveSelectionCell: UICollectionViewCell {
         
         picker.dataSource = self
         picker.delegate = self
+        if let index = titles.firstIndex(of: Settings.shared.selectedTimingFunctionName) {
+            picker.selectRow(index, inComponent: 0, animated: false)
+        }
         addSubview(picker)
     }
     
