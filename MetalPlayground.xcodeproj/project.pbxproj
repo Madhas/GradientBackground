@@ -23,6 +23,7 @@
 		EAA5665D25CF721C00FCFBF8 /* GradientAnimation.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5665C25CF721C00FCFBF8 /* GradientAnimation.swift */; };
 		EAA5666225D00EC500FCFBF8 /* TimingCurveController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5666125D00EC500FCFBF8 /* TimingCurveController.swift */; };
 		EAA5666525D00FE000FCFBF8 /* TimingCurveSelectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5666425D00FE000FCFBF8 /* TimingCurveSelectionCell.swift */; };
+		EAA5666A25D0216200FCFBF8 /* TimingCurveConstructorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA5666925D0216200FCFBF8 /* TimingCurveConstructorView.swift */; };
 		EAA99E0025C1B3910020DE02 /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99DFF25C1B3910020DE02 /* SettingsController.swift */; };
 		EAA99E0625C1B6F80020DE02 /* ColorSettingsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */; };
 		EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAA99E0A25C1BB840020DE02 /* Settings.swift */; };
@@ -54,6 +55,7 @@
 		EAA5665C25CF721C00FCFBF8 /* GradientAnimation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientAnimation.swift; sourceTree = "<group>"; };
 		EAA5666125D00EC500FCFBF8 /* TimingCurveController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingCurveController.swift; sourceTree = "<group>"; };
 		EAA5666425D00FE000FCFBF8 /* TimingCurveSelectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingCurveSelectionCell.swift; sourceTree = "<group>"; };
+		EAA5666925D0216200FCFBF8 /* TimingCurveConstructorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimingCurveConstructorView.swift; sourceTree = "<group>"; };
 		EAA99DFF25C1B3910020DE02 /* SettingsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 		EAA99E0525C1B6F80020DE02 /* ColorSettingsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorSettingsCell.swift; sourceTree = "<group>"; };
 		EAA99E0A25C1BB840020DE02 /* Settings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Settings.swift; sourceTree = "<group>"; };
@@ -84,6 +86,7 @@
 				EAA5664725CB47E300FCFBF8 /* ColorSelectionView.swift */,
 				EABE3D7B25C5E88200D359DE /* EditColorsBottomView.swift */,
 				EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */,
+				EAA5666925D0216200FCFBF8 /* TimingCurveConstructorView.swift */,
 				EABE3D7F25C5EBBA00D359DE /* TopHeaderView.swift */,
 			);
 			name = Views;
@@ -256,6 +259,7 @@
 				EA206A2425C0931B0083FC89 /* MainBottomPanelView.swift in Sources */,
 				EAFB062125B9D3D70057C7CD /* GradientPositionsAnimation.swift in Sources */,
 				EAA99E0B25C1BB840020DE02 /* Settings.swift in Sources */,
+				EAA5666A25D0216200FCFBF8 /* TimingCurveConstructorView.swift in Sources */,
 				EAA99E3125C1DEA00020DE02 /* EditColorsController.swift in Sources */,
 				EA2C26B725B45D9600135808 /* Shaders.metal in Sources */,
 				EABE3D8325C5EF1200D359DE /* EditColorsPresentationController.swift in Sources */,
