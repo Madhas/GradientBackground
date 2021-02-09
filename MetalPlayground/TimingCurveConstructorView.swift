@@ -13,10 +13,14 @@ private enum Constants {
 
 final class TimingCurveConstructorView: UIView {
     
-    private let shapeLayer: CAShapeLayer
+    var currentTimingFunction: CAMediaTimingFunction {
+        CAMediaTimingFunction(controlPoints: startPoint[0], startPoint[1], endPoint[0], endPoint[1])
+    }
     
-    private let startThumb: UIView
-    private let endThumb: UIView
+    private let shapeLayer = CAShapeLayer()
+    
+    private let startThumb = UIView()
+    private let endThumb = UIView()
     
     private var startPoint: [Float] = [0.25, 0.25]
     private var endPoint: [Float] = [0.75, 0.75]
@@ -34,11 +38,16 @@ final class TimingCurveConstructorView: UIView {
     
     private var blockLayout = false
     
-    override init(frame: CGRect) {
-        shapeLayer = CAShapeLayer()
-        startThumb = UIView()
-        endThumb = UIView()
+    init(timingFunction: CAMediaTimingFunction) {
+        super.init(frame: .zero)
         
+        timingFunction.getControlPoint(at: 1, values: &startPoint)
+        timingFunction.getControlPoint(at: 2, values: &endPoint)
+        
+        setupViews()
+    }
+    
+    override init(frame: CGRect) {
         super.init(frame: frame)
         
         setupViews()
@@ -58,6 +67,26 @@ final class TimingCurveConstructorView: UIView {
         
         startThumb.center = CGPoint(x: CGFloat(startPoint[0]) * bounds.width, y: CGFloat(1 - startPoint[1]) * bounds.height)
         endThumb.center = CGPoint(x: CGFloat(endPoint[0]) * bounds.width, y: CGFloat(1 - endPoint[1]) * bounds.height)
+    }
+    
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        if startThumb.frame.contains(point) {
+            return startThumb
+        } else if endThumb.frame.contains(point) {
+            return endThumb
+        } else {
+            return super.hitTest(point, with: event)
+        }
+    }
+    
+    // MARK: Public
+    
+    func set(timingFunction: CAMediaTimingFunction) {
+        timingFunction.getControlPoint(at: 1, values: &startPoint)
+        timingFunction.getControlPoint(at: 2, values: &endPoint)
+        
+        setNeedsLayout()
+        layoutIfNeeded()
     }
     
     // MARK: Private
