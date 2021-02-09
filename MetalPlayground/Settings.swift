@@ -53,6 +53,10 @@ final class Settings {
         return timingFunction ?? CAMediaTimingFunction(name: .easeOut)
     }
     
+    var isTimingFunctionCustom: Bool {
+        return selectedTimingFunctionName == "Custom"
+    }
+    
     func set(colors: [UIColor]) {
         self.colors = colors
         pendingChanges = true
