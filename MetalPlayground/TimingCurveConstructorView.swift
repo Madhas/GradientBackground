@@ -57,17 +57,15 @@ final class TimingCurveConstructorView: UIView {
     }
     
     private lazy var axisImage: UIImage = {
-        UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
-        let ctx = UIGraphicsGetCurrentContext()!
-        let path = UIBezierPath(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
-        ctx.addPath(path.cgPath)
-        ctx.fillPath()
-        
-        let image = UIGraphicsGetImageFromCurrentImageContext()!
-        UIGraphicsEndImageContext()
-        
         let capInsets =  UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
-        return image.withRenderingMode(.alwaysTemplate).resizableImage(withCapInsets: capInsets, resizingMode: .stretch)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 1, height: 1))
+        return renderer.image { context in
+            let ctx = context.cgContext
+            
+            let path = UIBezierPath(rect: CGRect(x: 0, y: 0, width: 1, height: 1))
+            ctx.addPath(path.cgPath)
+            ctx.fillPath()
+        }.withRenderingMode(.alwaysTemplate).resizableImage(withCapInsets: capInsets, resizingMode: .stretch)
     }()
     
     private lazy var guideImage: UIImage = {
