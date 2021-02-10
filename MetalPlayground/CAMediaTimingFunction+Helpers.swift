@@ -9,31 +9,38 @@ import UIKit
 
 extension CAMediaTimingFunction {
     
-    func ratio(for t: Float) -> Float {
+    func y(at x: Float) -> Float {
         var p1: [Float] = [0, 0];
         var p2: [Float] = [0, 0]
         getControlPoint(at: 1, values: &p1)
         getControlPoint(at: 2, values: &p2)
-        let ctrl1 = CGPoint(x: Double(p1[0]), y: Double(p1[1]))
-        let ctrl2 = CGPoint(x: Double(p2[0]), y: Double(p2[1]))
         
-        let a1 = pow((1 - t), 3) * CGPoint.zero
-        let a2 = 3 * pow((1 - t), 2) * t * ctrl1
-        let a3 = 3 * (1 - t) * pow(t, 2) * ctrl2
-        let a4 = pow(t, 3) * CGPoint(x: 1, y: 1)
-        let point = a1 + a2 + a3 + a4
-
-        return Float(point.y)
+        // Since our function grows monotonically
+        let eps: Float = 1 / 80
+        
+        var lower: Float = 0
+        var upper: Float = 1
+        var tn: Float = 0.5
+        var xn = cubicBezier(for: (p1[0], p1[1]), p2: (p2[0], p2[1]), t: tn).x
+        
+        while abs(x - xn) > eps {
+            if xn > x {
+                upper = tn
+            } else {
+                lower = tn
+            }
+            
+            tn = (upper + lower) / 2
+            xn = cubicBezier(for: (p1[0], p1[1]), p2: (p2[0], p2[1]), t: tn).x
+        }
+        
+        return cubicBezier(for: (p1[0], p1[1]), p2: (p2[0], p2[1]), t: tn).y
     }
-}
-
-private extension CGPoint {
-
-    static func *(lhs: Float, rhs: CGPoint) -> CGPoint {
-        CGPoint(x: Double(lhs) * Double(rhs.x), y: Double(lhs) * Double(rhs.y))
-    }
-
-    static func +(lhs: CGPoint, rhs: CGPoint) -> CGPoint {
-        CGPoint(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
+    
+    private func cubicBezier(for p1: (x: Float, y: Float), p2: (x: Float, y: Float), t: Float) -> (x: Float, y: Float) {
+        let x = 3 * pow((1 - t), 2) * t * p1.x + 3 * (1 - t) * pow(t, 2) * p2.x + pow(t, 3)
+        let y = 3 * pow((1 - t), 2) * t * p1.y + 3 * (1 - t) * pow(t, 2) * p2.y + pow(t, 3)
+        
+        return (x, y)
     }
 }

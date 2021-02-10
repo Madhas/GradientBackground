@@ -10,7 +10,7 @@ import UIKit
 final class GradientPositionsAnimation: GradientAnimation<[SIMD2<Float>]> {
     
     override func nextValue(for t: TimeInterval) -> [SIMD2<Float>] {
-        let ratio = timingFunction.ratio(for: Float(t))
+        let ratio = timingFunction.y(at: Float(t))
         return fromValue.enumerated().map { idx, point -> SIMD2<Float> in
             let dx = (toValue[idx].x - fromValue[idx].x) * ratio
             let dy = (toValue[idx].y - fromValue[idx].y) * ratio
