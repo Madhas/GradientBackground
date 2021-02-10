@@ -22,9 +22,12 @@ final class TimingCurveConstructorView: UIView {
     private let endThumb = UIView()
     private let xAxisView = UIImageView()
     private let yAxisView = UIImageView()
+    private let startGuide = UIImageView()
+    private let endGuide = UIImageView()
     
     private var startPoint: [Float] = [0.25, 0.25]
     private var endPoint: [Float] = [0.75, 0.75]
+    
     private var currentPath: UIBezierPath {
         let w = bounds.width
         let h = bounds.height
@@ -37,6 +40,22 @@ final class TimingCurveConstructorView: UIView {
         return path
     }
     
+    var startGuideRotation: CGAffineTransform {
+        CGAffineTransform(rotationAngle: atan(-(bounds.height - startThumb.frame.midY) / startThumb.frame.midX))
+    }
+    var startGuideSize: CGSize {
+        CGSize(width: sqrt(pow(startThumb.frame.midX, 2) + pow(bounds.height - startThumb.frame.midY, 2)),
+               height: guideImage.size.height)
+    }
+    
+    var endGuideRotation: CGAffineTransform {
+        CGAffineTransform(rotationAngle: atan(-endThumb.frame.midY / (bounds.width - endThumb.frame.midX)))
+    }
+    var endGuideSize: CGSize {
+        CGSize(width: sqrt(pow(bounds.width - endThumb.frame.midX, 2) + pow(endThumb.frame.midY, 2)),
+               height: guideImage.size.height)
+    }
+    
     private lazy var axisImage: UIImage = {
         UIGraphicsBeginImageContext(CGSize(width: 1, height: 1))
         let ctx = UIGraphicsGetCurrentContext()!
@@ -47,8 +66,31 @@ final class TimingCurveConstructorView: UIView {
         let image = UIGraphicsGetImageFromCurrentImageContext()!
         UIGraphicsEndImageContext()
         
-        let capInsets =  UIEdgeInsets(top: 0, left: 1, bottom: 0, right: 1)
-        return image.withRenderingMode(.alwaysTemplate).resizableImage(withCapInsets: capInsets)
+        let capInsets =  UIEdgeInsets(top: 1, left: 1, bottom: 1, right: 1)
+        return image.withRenderingMode(.alwaysTemplate).resizableImage(withCapInsets: capInsets, resizingMode: .stretch)
+    }()
+    
+    private lazy var guideImage: UIImage = {
+        let dotSize: CGFloat = 3
+        let space: CGFloat = 4
+        
+        let capInsets = UIEdgeInsets(top: 0, left: dotSize, bottom: 0, right: dotSize + space)
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: dotSize * 3 + space * 2, height: dotSize))
+        return renderer.image { context in
+            let ctx = context.cgContext
+            
+            let centers = [CGPoint(x: dotSize / 2, y: dotSize / 2),
+                           CGPoint(x: dotSize + space + dotSize / 2, y: dotSize / 2),
+                           CGPoint(x: dotSize * 2 + space * 2 + dotSize / 2, y: dotSize / 2)]
+            let dot1 = UIBezierPath(arcCenter: centers[0], radius: dotSize / 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+            let dot2 = UIBezierPath(arcCenter: centers[1], radius: dotSize / 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+            let dot3 = UIBezierPath(arcCenter: centers[2], radius: dotSize / 2, startAngle: 0, endAngle: .pi * 2, clockwise: true)
+            
+            ctx.addPath(dot1.cgPath)
+            ctx.addPath(dot2.cgPath)
+            ctx.addPath(dot3.cgPath)
+            ctx.fillPath()
+        }.withRenderingMode(.alwaysTemplate).resizableImage(withCapInsets: capInsets)
     }()
     
     private var blockLayout = false
@@ -80,14 +122,22 @@ final class TimingCurveConstructorView: UIView {
         shapeLayer.frame = bounds
         shapeLayer.path = currentPath.cgPath
         
-        startThumb.center = CGPoint(x: CGFloat(startPoint[0]) * bounds.width, y: CGFloat(1 - startPoint[1]) * bounds.height)
-        endThumb.center = CGPoint(x: CGFloat(endPoint[0]) * bounds.width, y: CGFloat(1 - endPoint[1]) * bounds.height)
-        
         yAxisView.center = CGPoint(x: 1.5, y: bounds.height)
         yAxisView.bounds.size = CGSize(width: bounds.height, height: 3)
         
         xAxisView.center = CGPoint(x: 0, y: bounds.height - 1.5)
         xAxisView.bounds.size = CGSize(width: bounds.width, height: 3)
+        
+        startThumb.center = CGPoint(x: CGFloat(startPoint[0]) * bounds.width, y: CGFloat(1 - startPoint[1]) * bounds.height)
+        endThumb.center = CGPoint(x: CGFloat(endPoint[0]) * bounds.width, y: CGFloat(1 - endPoint[1]) * bounds.height)
+
+        startGuide.center = CGPoint(x: guideImage.size.height / 2, y: bounds.height - guideImage.size.height / 2)
+        startGuide.bounds.size = startGuideSize
+        startGuide.transform = startGuideRotation
+        
+        endGuide.center = CGPoint(x: bounds.width - guideImage.size.height / 2, y: guideImage.size.height / 2)
+        endGuide.bounds.size = endGuideSize
+        endGuide.transform = endGuideRotation
     }
     
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
@@ -113,6 +163,16 @@ final class TimingCurveConstructorView: UIView {
     // MARK: Private
     
     private func setupViews() {
+        startGuide.image = guideImage
+        startGuide.tintColor = .accent
+        startGuide.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
+        addSubview(startGuide)
+        
+        endGuide.image = guideImage
+        endGuide.tintColor = .accent
+        endGuide.layer.anchorPoint = CGPoint(x: 1, y: 0.5)
+        addSubview(endGuide)
+        
         shapeLayer.lineWidth = 4
         shapeLayer.strokeColor = UIColor.mainColor.cgColor
         shapeLayer.fillColor = UIColor.clear.cgColor
@@ -120,12 +180,12 @@ final class TimingCurveConstructorView: UIView {
         layer.addSublayer(shapeLayer)
         
         xAxisView.image = axisImage
-        xAxisView.tintColor = .lightGreen
+        xAxisView.tintColor = .secondaryColor
         xAxisView.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
         addSubview(xAxisView)
         
         yAxisView.image = axisImage
-        yAxisView.tintColor = .lightGreen
+        yAxisView.tintColor = .secondaryColor
         yAxisView.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
         yAxisView.transform = CGAffineTransform(rotationAngle: -.pi / 2)
         addSubview(yAxisView)
@@ -178,6 +238,11 @@ final class TimingCurveConstructorView: UIView {
                 endPoint = ctrlPoint
             }
             shapeLayer.path = currentPath.cgPath
+            
+            startGuide.transform = startGuideRotation
+            startGuide.bounds.size = startGuideSize
+            endGuide.bounds.size = endGuideSize
+            endGuide.transform = endGuideRotation
         case .ended, .cancelled:
             blockLayout = false
             view.transform = .identity
