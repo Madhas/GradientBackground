@@ -12,6 +12,7 @@ final class TopHeaderView: UIView {
     let actionButton: UIButton
     
     var blockLayoutSubviews = false
+    var topInset: CGFloat = 0
     
     override init(frame: CGRect) {
         actionButton = UIButton(type: .system)
@@ -34,9 +35,9 @@ final class TopHeaderView: UIView {
         
         let height: CGFloat
         if #available(iOS 11, *) {
-            height = bounds.height - safeAreaInsets.top
+            height = bounds.height - safeAreaInsets.top - topInset
         } else {
-            height = bounds.height
+            height = bounds.height - topInset
         }
         
         let actionWidth = actionButton.sizeThatFits(CGSize(width: .greatestFiniteMagnitude, height: height)).width

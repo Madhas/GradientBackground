@@ -15,9 +15,11 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
     }
     
     private let transition: Transition
+    private let completion: (() -> Void)?
     
-    init(transition: Transition) {
+    init(transition: Transition, completion: (() -> Void)? = nil) {
         self.transition = transition
+        self.completion = completion
     }
 
     func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
@@ -43,11 +45,14 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         
         let topPanelHeight: CGFloat
         let bottomPanelHeight: CGFloat
-        if #available(iOS 11, *) {
+        if #available(iOS 12, *) {
             topPanelHeight = toController.topHeight + containerView.safeAreaInsets.top
             bottomPanelHeight = toController.bottomHeight + containerView.safeAreaInsets.bottom
+        } else if #available(iOS 11, *) {
+            topPanelHeight = toController.topHeight + fromController.view.safeAreaInsets.top
+            bottomPanelHeight = toController.bottomHeight + fromController.view.safeAreaInsets.bottom
         } else {
-            topPanelHeight = toController.topHeight
+            topPanelHeight = toController.topHeight + fromController.topLayoutGuide.length
             bottomPanelHeight = toController.bottomHeight
         }
         
@@ -80,6 +85,9 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
 
             UIView.addKeyframe(withRelativeStartTime: 0, relativeDuration: 0.65) {
                 gradientView.frame = gradientTargetFrame
+                #if targetEnvironment(simulator)
+                gradientView.layoutIfNeeded()
+                #endif
             }
             
             UIView.addKeyframe(withRelativeStartTime: 0.65, relativeDuration: 0.35) {
@@ -93,6 +101,8 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             toController.view.addSubview(gradientView)
             toController.gradientView = gradientView
             transitionContext.completeTransition($0)
+            
+            self.completion?()
         }
     }
     
@@ -119,6 +129,11 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
         
         let previousTransform = toController.view.transform
         toController.view.transform = .identity
+        if #available(iOS 13, *) {}
+        else if #available(iOS 10, *) {
+            toController.view.setNeedsLayout()
+            toController.view.layoutIfNeeded()
+        }
         let gradientTargetFrame = containerView.convert(cell.gradientFrame, from: cell)
         toController.view.transform = previousTransform
         
@@ -140,6 +155,9 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             
             UIView.addKeyframe(withRelativeStartTime: 0.35, relativeDuration: 0.65) {
                 gradientView.frame = gradientTargetFrame
+                #if targetEnvironment(simulator)
+                gradientView.layoutIfNeeded()
+                #endif
             }
         } completion: {
             gradientView.removeFromSuperview()
@@ -150,6 +168,8 @@ final class EditColorsAnimator: NSObject, UIViewControllerAnimatedTransitioning 
             cell.layoutIfNeeded()
             
             transitionContext.completeTransition($0)
+            
+            self.completion?()
         }
     }
 }

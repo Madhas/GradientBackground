@@ -17,6 +17,7 @@ final class SettingsController: UIViewController {
     weak var delegate: SettingsControllerDelegate?
     
     private var collectionView: UICollectionView!
+    private var fixedContentOffset: CGPoint?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -48,7 +49,6 @@ final class SettingsController: UIViewController {
     @objc private func close() {
         dismiss(animated: true, completion: nil)
     }
-
 }
 
 // MARK: UICollectionViewDataSource
@@ -126,6 +126,10 @@ extension SettingsController: UIViewControllerTransitioningDelegate {
             return nil
         }
         
+        if #available(iOS 13, *) {
+        } else if #available(iOS 11, *) {
+            fixedContentOffset = collectionView.contentOffset
+        }
         return EditColorsAnimator(transition: .present(cell))
     }
     
@@ -134,7 +138,12 @@ extension SettingsController: UIViewControllerTransitioningDelegate {
             return nil
         }
         
-        return EditColorsAnimator(transition: .dismiss(cell))
+        return EditColorsAnimator(transition: .dismiss(cell)) { [weak self] in
+            if let offset = self?.fixedContentOffset {
+                self?.collectionView.contentOffset = offset
+                self?.fixedContentOffset = nil
+            }
+        }
     }
 }
 

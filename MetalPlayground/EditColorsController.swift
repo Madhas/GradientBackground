@@ -114,12 +114,16 @@ final class EditColorsController: UIViewController {
             topHeight = self.topHeight + view.safeAreaInsets.top
             bottomHeight = self.bottomHeight + view.safeAreaInsets.bottom
         } else {
-            topHeight = self.topHeight
+            topHeight = self.topHeight + topLayoutGuide.length
             bottomHeight = self.bottomHeight
         }
         
         if let topPanel = self.topPanel {
             topPanel.frame = CGRect(x: 0, y: 0, width: view.bounds.width, height: topHeight)
+            if #available(iOS 11, *) {}
+            else {
+                topPanel.topInset = topLayoutGuide.length
+            }
         }
         
         if let bottomPanel = self.bottomPanel {
