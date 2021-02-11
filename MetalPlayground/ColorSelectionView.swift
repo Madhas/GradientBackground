@@ -74,6 +74,16 @@ final class ColorSelectionView: UIView {
         colorButton.addTarget(target, action: action, for: .touchUpInside)
     }
     
+    func stopEditing() {
+        if rInput.isFirstResponder {
+            rInput.resignFirstResponder()
+        } else if gInput.isFirstResponder {
+            gInput.resignFirstResponder()
+        } else if bInput.isFirstResponder {
+            bInput.resignFirstResponder()
+        }
+    }
+    
     // MARK: Private
     
     private func setup() {

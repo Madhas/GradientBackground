@@ -174,7 +174,7 @@ final class EditColorsController: UIViewController {
         guard let view = colorSelectionView else { return }
     
         if view.isEditing {
-            view.endEditing(false)
+            view.stopEditing()
         } else {
             hideColorSelection()
         }
@@ -241,6 +241,7 @@ final class EditColorsController: UIViewController {
         guard let colorView = colorSelectionView else { return }
         
         handleEdited?.backgroundColor = colorView.selectedColor
+        colorView.stopEditing()
         hideColorSelection()
         
         var pendingChanges = false
