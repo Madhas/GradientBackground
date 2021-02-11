@@ -279,7 +279,7 @@ final class EditColorsController: UIViewController {
 
 // MARK: Color comparison
 
-extension UIColor {
+private extension UIColor {
 
     func isEqual(toColor color: UIColor) -> Bool {
         var lRed: CGFloat = 0
