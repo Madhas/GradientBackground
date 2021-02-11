@@ -1,8 +1,8 @@
 //
 //  Shaders.metal
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 17.01.2021.
+//  Created by Andrey Ovsyannikov on 17.01.2021.
 //
 
 #include <metal_stdlib>

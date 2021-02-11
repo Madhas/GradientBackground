@@ -1,8 +1,8 @@
 //
 //  ColorSelectionView.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 04.02.2021.
+//  Created by Andrey Ovsyannikov on 04.02.2021.
 //
 
 import UIKit

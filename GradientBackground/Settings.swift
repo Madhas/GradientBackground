@@ -1,8 +1,8 @@
 //
 //  Settings.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 27.01.2021.
+//  Created by Andrey Ovsyannikov on 27.01.2021.
 //
 
 import UIKit

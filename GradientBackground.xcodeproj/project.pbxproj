@@ -41,7 +41,7 @@
 		EA206A2325C0931B0083FC89 /* MainBottomPanelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainBottomPanelView.swift; sourceTree = "<group>"; };
 		EA206A2625C094340083FC89 /* UIColor+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Convenience.swift"; sourceTree = "<group>"; };
 		EA206A2A25C095BB0083FC89 /* UIImage+Convenience.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Convenience.swift"; sourceTree = "<group>"; };
-		EA2C269625B4504800135808 /* MetalPlayground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MetalPlayground.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		EA2C269625B4504800135808 /* GradientBackground.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GradientBackground.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA2C269925B4504800135808 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		EA2C269D25B4504800135808 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		EA2C26A225B4504900135808 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -117,7 +117,7 @@
 		EA2C268D25B4504800135808 = {
 			isa = PBXGroup;
 			children = (
-				EA2C269825B4504800135808 /* MetalPlayground */,
+				EA2C269825B4504800135808 /* GradientBackground */,
 				EA2C269725B4504800135808 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -125,12 +125,12 @@
 		EA2C269725B4504800135808 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				EA2C269625B4504800135808 /* MetalPlayground.app */,
+				EA2C269625B4504800135808 /* GradientBackground.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		EA2C269825B4504800135808 /* MetalPlayground */ = {
+		EA2C269825B4504800135808 /* GradientBackground */ = {
 			isa = PBXGroup;
 			children = (
 				EAA5665725CF719700FCFBF8 /* Animations */,
@@ -144,7 +144,7 @@
 				EA2C26A425B4504900135808 /* LaunchScreen.storyboard */,
 				EA2C26A725B4504900135808 /* Info.plist */,
 			);
-			path = MetalPlayground;
+			path = GradientBackground;
 			sourceTree = "<group>";
 		};
 		EAA5665725CF719700FCFBF8 /* Animations */ = {
@@ -192,9 +192,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		EA2C269525B4504800135808 /* MetalPlayground */ = {
+		EA2C269525B4504800135808 /* GradientBackground */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = EA2C26AA25B4504900135808 /* Build configuration list for PBXNativeTarget "MetalPlayground" */;
+			buildConfigurationList = EA2C26AA25B4504900135808 /* Build configuration list for PBXNativeTarget "GradientBackground" */;
 			buildPhases = (
 				EA2C269225B4504800135808 /* Sources */,
 				EA2C269325B4504800135808 /* Frameworks */,
@@ -204,9 +204,9 @@
 			);
 			dependencies = (
 			);
-			name = MetalPlayground;
+			name = GradientBackground;
 			productName = MetalPlayground;
-			productReference = EA2C269625B4504800135808 /* MetalPlayground.app */;
+			productReference = EA2C269625B4504800135808 /* GradientBackground.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -224,7 +224,7 @@
 					};
 				};
 			};
-			buildConfigurationList = EA2C269125B4504800135808 /* Build configuration list for PBXProject "MetalPlayground" */;
+			buildConfigurationList = EA2C269125B4504800135808 /* Build configuration list for PBXProject "GradientBackground" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -237,7 +237,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				EA2C269525B4504800135808 /* MetalPlayground */,
+				EA2C269525B4504800135808 /* GradientBackground */,
 			);
 		};
 /* End PBXProject section */
@@ -426,13 +426,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D4B5XXQ9V5;
-				INFOPLIST_FILE = MetalPlayground/Info.plist;
+				INFOPLIST_FILE = GradientBackground/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.home.MetalPlayground;
+				PRODUCT_BUNDLE_IDENTIFIER = com.home.GradientBackground;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -448,13 +448,13 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = D4B5XXQ9V5;
-				INFOPLIST_FILE = MetalPlayground/Info.plist;
+				INFOPLIST_FILE = GradientBackground/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.home.MetalPlayground;
+				PRODUCT_BUNDLE_IDENTIFIER = com.home.GradientBackground;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -464,7 +464,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		EA2C269125B4504800135808 /* Build configuration list for PBXProject "MetalPlayground" */ = {
+		EA2C269125B4504800135808 /* Build configuration list for PBXProject "GradientBackground" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA2C26A825B4504900135808 /* Debug */,
@@ -473,7 +473,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		EA2C26AA25B4504900135808 /* Build configuration list for PBXNativeTarget "MetalPlayground" */ = {
+		EA2C26AA25B4504900135808 /* Build configuration list for PBXNativeTarget "GradientBackground" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				EA2C26AB25B4504900135808 /* Debug */,

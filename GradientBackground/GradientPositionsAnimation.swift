@@ -1,8 +1,8 @@
 //
 //  GradientViewAnimation.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 21.01.2021.
+//  Created by Andrey Ovsyannikov on 21.01.2021.
 //
 
 import UIKit

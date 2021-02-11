@@ -1,8 +1,8 @@
 //
 //  TimingCurveConstructorCell.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 09.02.2021.
+//  Created by Andrey Ovsyannikov on 09.02.2021.
 //
 
 import UIKit

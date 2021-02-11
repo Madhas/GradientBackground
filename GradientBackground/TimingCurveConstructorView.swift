@@ -1,8 +1,8 @@
 //
 //  TimingCurveConstructorView.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 07.02.2021.
+//  Created by Andrey Ovsyannikov on 07.02.2021.
 //
 
 import UIKit

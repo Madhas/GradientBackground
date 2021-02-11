@@ -1,8 +1,8 @@
 //
 //  UIColor+Convenience.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 26.01.2021.
+//  Created by Andrey Ovsyannikov on 26.01.2021.
 //
 
 import UIKit

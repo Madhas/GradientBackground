@@ -1,8 +1,8 @@
 //
 //  CAMediaTimingFunction+Helpers.swift
-//  MetalPlayground
+//  GradientBackground
 //
-//  Created by Андрей Овсянников on 19.01.2021.
+//  Created by Andrey Ovsyannikov on 19.01.2021.
 //
 
 import UIKit
