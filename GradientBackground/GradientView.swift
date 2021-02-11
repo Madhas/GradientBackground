@@ -28,7 +28,6 @@ final class GradientView: UIView {
     // Metal
     private var device: MTLDevice!
     private var renderPipelineState: MTLRenderPipelineState!
-    private var computePipelineState: MTLComputePipelineState!
     private var commandQueue: MTLCommandQueue!
     private var library: MTLLibrary!
     private var blurShader: MPSImageGaussianBlur!
@@ -142,15 +141,12 @@ final class GradientView: UIView {
         
         let vertexProgram = library.makeFunction(name: "vertex_shader")!
         let fragmentProgram = library.makeFunction(name: "fragment_shader")!
-        let computeProgram = library.makeFunction(name: "displaceTexture")!
         
         let renderPipelineDescriptor = MTLRenderPipelineDescriptor()
         renderPipelineDescriptor.vertexFunction = vertexProgram
         renderPipelineDescriptor.fragmentFunction = fragmentProgram
         renderPipelineDescriptor.colorAttachments[0].pixelFormat = .bgra8Unorm
         renderPipelineState = try! device.makeRenderPipelineState(descriptor: renderPipelineDescriptor)
-        
-        computePipelineState = try! device.makeComputePipelineState(function: computeProgram)
         
         blurShader = MPSImageGaussianBlur(device: device, sigma: 35)
         blurShader.edgeMode = .clamp
