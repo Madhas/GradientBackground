@@ -15,7 +15,7 @@ extension CAMediaTimingFunction {
         getControlPoint(at: 1, values: &p1)
         getControlPoint(at: 2, values: &p2)
         
-        // Since our function grows monotonically
+        // Since our function grows monotonically we can approximate t using binary search on the whole interval
         let eps: Float = 1 / 80
         
         var lower: Float = 0
@@ -34,6 +34,7 @@ extension CAMediaTimingFunction {
             xn = cubicBezier(for: (p1[0], p1[1]), p2: (p2[0], p2[1]), t: tn).x
         }
         
+        // Value of y at approximated t is the current progress of the animation
         return cubicBezier(for: (p1[0], p1[1]), p2: (p2[0], p2[1]), t: tn).y
     }
     

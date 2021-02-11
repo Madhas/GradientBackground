@@ -6,12 +6,15 @@
 //
 
 import UIKit
+#if !targetEnvironment(simulator)
 import Metal
 import MetalPerformanceShaders
 import simd
 
-final class GradientView: UIView {
+// MARK: Original View
 
+final class GradientView: UIView {
+    
     override class var layerClass: AnyClass {
         CAMetalLayer.self
     }
@@ -220,3 +223,50 @@ final class GradientView: UIView {
         commandBuffer.commit()
     }
 }
+
+#else
+
+// MARK: Stub View
+
+final class GradientView: UIView {
+    
+    private let label = UILabel()
+    
+    init(colors: [UIColor]) {
+        super.init(frame: .zero)
+        
+        backgroundColor = .blue
+        
+        label.text = "Run on device"
+        label.font = .systemFont(ofSize: 25)
+        label.textColor = .white
+        label.textAlignment = .center
+        addSubview(label)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        
+        let height: CGFloat = 30
+        label.frame = CGRect(x: 0, y: bounds.midY - height / 2, width: bounds.width, height: height)
+    }
+    
+    // Public Stubs
+    
+    let controlPoints: [CGPoint] = []
+    
+    func animatePositions(with duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+    }
+    
+    func animateColors(_ colors: [UIColor], duration: TimeInterval, timingFunction: CAMediaTimingFunction) {
+    }
+    
+    func set(colors: [UIColor]) {
+    }
+}
+
+#endif
