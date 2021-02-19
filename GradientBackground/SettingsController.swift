@@ -98,6 +98,7 @@ extension SettingsController: UICollectionViewDelegateFlowLayout {
             let controller = EditColorsController()
             controller.modalPresentationStyle = .custom
             controller.transitioningDelegate = self
+            controller.modalPresentationCapturesStatusBarAppearance = true
             controller.delegate = self
             controller.shouldLoadGradientView = false
             present(controller, animated: true, completion: nil)
